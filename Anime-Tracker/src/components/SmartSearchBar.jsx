@@ -105,7 +105,7 @@ export const SmartSearchBar = () => {
                       <span className="text-slate-400 text-xs">{anime.episodes ? `${anime.episodes} Episodes` : 'Ongoing'}</span>
                     </div>
                     <button 
-                      onMouseDown={( e ) => { e.preventDefault(); handleAdd(anime); }}
+                      onMouseDown={( e ) => { e.preventDefault(); handleAdd( anime ); }}
                       disabled={isInList}
                       className={`p-2 rounded-full transition-all flex-shrink-0 ${
                         isInList 
