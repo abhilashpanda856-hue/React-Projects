@@ -29,7 +29,7 @@ export default function App() {
   const VIEWBOX_HEIGHT = 500;
   const scaleY = (y) => VIEWBOX_HEIGHT - y;
 
-  const generateSvgPath = (points) => {
+  const generateSvgPath = ( points ) => {
     if (!points || points.length === 0) return '';
     return points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${scaleY(p.y)}`).join(' ');
   };
