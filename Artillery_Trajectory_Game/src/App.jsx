@@ -27,7 +27,7 @@ export default function App() {
 
   const VIEWBOX_WIDTH = 1200;
   const VIEWBOX_HEIGHT = 500;
-  const scaleY = (y) => VIEWBOX_HEIGHT - y;
+  const scaleY = ( y ) => VIEWBOX_HEIGHT - y;
 
   const generateSvgPath = ( points ) => {
     if (!points || points.length === 0) return '';
