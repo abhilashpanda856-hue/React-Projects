@@ -22,7 +22,7 @@ export default function App() {
       requestRef.current = requestAnimationFrame(tick);
     }
     
-    return () => cancelAnimationFrame(requestRef.current);
+    return () => cancelAnimationFrame( requestRef.current );
   }, [state.playbackState]);
 
   const VIEWBOX_WIDTH = 1200;
