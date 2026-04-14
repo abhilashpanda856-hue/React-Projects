@@ -7,7 +7,7 @@ import ResourceGrid from './components/ResourceGrid';
 import ContactSection from './components/ContactSection';
 
 // AI in Space section
-function AISpaceSection() {
+function AISpaceSection( ) {
   return (
     <section id="ai-space" className="relative py-32 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
