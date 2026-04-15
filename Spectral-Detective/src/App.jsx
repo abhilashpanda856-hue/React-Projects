@@ -6,8 +6,11 @@ export default function App() {
   const [state, dispatch] = useReducer(spectralReducer, initialState);
 
   return (
+
     <SpectralContext.Provider value={{ state, dispatch }}>
       <SpectralAppLayout />
+
     </SpectralContext.Provider>
+    
   );
 }
