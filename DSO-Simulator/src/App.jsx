@@ -3,9 +3,10 @@ import { StoreProvider } from './context/StoreContext';
 import ScopeScreen from './components/ScopeScreen';
 import ControlPanel from './components/ControlPanel';
 
+
 export default function App( ) {
   return (
-    
+
     <StoreProvider>
       <div className="min-h-screen bg-[#0a0a0a] text-slate-200 p-6 font-sans flex flex-col items-center justify-center">
         
