@@ -2,6 +2,17 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Search, Plus, CheckCircle, RefreshCw, X } from 'lucide-react';
 import { AnimeContext } from '../context/AnimeContext';
 import { useDebounce } from '../hooks/useDebounce';
+import { supabase } from '../supabaseClient';
+
+// Mock fallback data for when Jikan API is rate limited
+const MOCK_SEARCH_RESULTS = [
+  { mal_id: 1, title: 'Attack on Titan', images: { jpg: { image_url: 'https://cdn.myanimelist.net/images/anime/10/47347.jpg' } }, episodes: 25 },
+  { mal_id: 2, title: 'Death Note', images: { jpg: { image_url: 'https://cdn.myanimelist.net/images/anime/9/9453.jpg' } }, episodes: 37 },
+  { mal_id: 3, title: 'Fullmetal Alchemist: Brotherhood', images: { jpg: { image_url: 'https://cdn.myanimelist.net/images/anime/1223/96541.jpg' } }, episodes: 64 },
+  { mal_id: 4, title: 'One Piece', images: { jpg: { image_url: 'https://cdn.myanimelist.net/images/anime/6/73245.jpg' } }, episodes: 1000 },
+  { mal_id: 5, title: 'Demon Slayer', images: { jpg: { image_url: 'https://cdn.myanimelist.net/images/anime/1286/99889.jpg' } }, episodes: 26 },
+  { mal_id: 6, title: 'Jujutsu Kaisen', images: { jpg: { image_url: 'https://cdn.myanimelist.net/images/anime/1171/109222.jpg' } }, episodes: 24 },
+];
 
 export const SmartSearchBar = () => {
   const [query, setQuery] = useState('');
@@ -9,7 +20,7 @@ export const SmartSearchBar = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   
-  const debouncedQuery = useDebounce(query, 500);
+  const debouncedQuery = useDebounce(query, 300);
   const { state, dispatch } = useContext(AnimeContext);
   const wrapperRef = useRef(null);
 
@@ -23,7 +34,7 @@ export const SmartSearchBar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
+useEffect(() => {
     const fetchAnime = async () => {
       if (!debouncedQuery.trim()) {
         setResults([]);
@@ -32,11 +43,19 @@ export const SmartSearchBar = () => {
       setIsSearching(true);
       try {
         const res = await fetch(`https://api.jikan.moe/v4/anime?q=${debouncedQuery}&sfw=true&limit=6`);
+        if (!res.ok) throw new Error('Jikan API rate limit');
+        
         const data = await res.json();
         setResults(data.data || []);
         setShowDropdown(true);
       } catch (err) {
-        console.error(err);
+        console.error("Search failed, using mock data:", err);
+        // Fallback to mock data when Jikan API fails (rate limit, 504, network error)
+        const filteredMock = MOCK_SEARCH_RESULTS.filter(anime => 
+          anime.title.toLowerCase().includes(debouncedQuery.toLowerCase())
+        );
+        setResults(filteredMock);
+        setShowDropdown(true);
       }
       setIsSearching(false);
     };
@@ -44,7 +63,41 @@ export const SmartSearchBar = () => {
     fetchAnime();
   }, [debouncedQuery]);
 
-  const handleAdd = (anime) => {
+  // 2. Transformed handleAdd into an async function to talk to Supabase
+  const handleAdd = async (anime) => {
+    // A. Verify the user is logged in
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      alert("You must be logged in to save anime!");
+      return;
+    }
+
+    // B. Save the anime to the Supabase database
+    const { error } = await supabase
+      .from('tracked_anime')
+      .insert([
+        {
+          user_id: user.id,
+          mal_id: anime.mal_id,
+          title: anime.title,
+          status: 'Watching',
+          episodes_watched: 0
+        }
+      ]);
+
+    // C. Handle any database errors
+    if (error) {
+      if (error.code === '23505') {
+        alert(`${anime.title} is already in your watchlist!`);
+      } else {
+        console.error("Error saving anime:", error);
+        alert("Something went wrong saving the anime to the database.");
+      }
+      return; // Stop here so it doesn't add to the local screen if the DB fails
+    }
+
+    // D. If database save is successful, update the local React state (Context)
     dispatch({
       type: 'ADD_ANIME',
       payload: {
@@ -54,6 +107,8 @@ export const SmartSearchBar = () => {
         episodes: anime.episodes
       }
     });
+    
+    // E. Reset the search bar
     setQuery('');
     setShowDropdown(false);
   };

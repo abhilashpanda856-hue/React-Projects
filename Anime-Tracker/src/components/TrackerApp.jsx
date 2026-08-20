@@ -1,14 +1,57 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Tv, ListVideo, PlayCircle, CheckCircle, Clock, XCircle, MonitorPlay } from 'lucide-react';
 import { AnimeContext } from '../context/AnimeContext';
 import { SmartSearchBar } from './SmartSearchBar';
 import { AnimeCard } from './AnimeCard';
 import { GlassCard } from './GlassCard';
+import { supabase } from '../supabaseClient'; // Imported Supabase client
 
 export const TrackerApp = () => {
   const [listFilter, setListFilter] = useState('All');
-  const { state } = useContext(AnimeContext);
-  const myList = state.list;
+  // Added 'dispatch' here so we can send the database data into your React state
+  const { state, dispatch } = useContext(AnimeContext); 
+  const myList = state.list || [];
+
+  // --- NEW SUPABASE FETCH LOGIC ---
+  useEffect(() => {
+    const fetchMyWatchlist = async () => {
+      // 1. Get the currently logged-in user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        // 2. Ask Supabase for every anime matching this user's ID
+        const { data, error } = await supabase
+          .from('tracked_anime')
+          .select('*')
+          .eq('user_id', user.id);
+
+        if (error) {
+          console.error("Error fetching watchlist:", error);
+        } else if (data) {
+          // 3. Map Supabase fields to Context format
+          const mappedData = data.map(anime => ({
+            ...anime,
+            watchedEpisodes: anime.episodes_watched,
+            status: anime.status.charAt(0).toUpperCase() + anime.status.slice(1), // 'watching' -> 'Watching'
+            image: anime.image || `https://cdn.myanimelist.net/images/anime/${anime.mal_id}.jpg`,
+            episodes: anime.episodes || null,
+            rewatches: anime.rewatches || 0,
+            rating: anime.rating || 0,
+            addedAt: anime.created_at
+          }));
+          
+          // 4. Send the data to your global state so the UI updates!
+          dispatch({
+            type: 'SET_INITIAL_LIST',
+            payload: mappedData
+          });
+        }
+      }
+    };
+
+    fetchMyWatchlist();
+  }, [dispatch]);
+  // ---------------------------------
 
   const filteredList = myList.filter(anime => 
     listFilter === 'All' ? true : anime.status === listFilter

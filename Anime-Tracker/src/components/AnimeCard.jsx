@@ -2,10 +2,158 @@ import React, { useContext } from 'react';
 import { Trash2, Plus, Star, RefreshCw } from 'lucide-react';
 import { AnimeContext } from '../context/AnimeContext';
 import { GlassCard } from './GlassCard';
+import { supabase } from '../supabaseClient';
 
 export const AnimeCard = ({ anime }) => {
   const { dispatch } = useContext(AnimeContext);
   
+  // Added the Supabase deletion logic
+  const handleRemove = async () => {
+    // Verify the user is logged in
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      alert("You must be logged in to delete anime!");
+      return;
+    }
+
+    // Tell Supabase to delete this specific anime from the database
+    const { error } = await supabase
+      .from('tracked_anime')
+      .delete()
+      .eq('mal_id', anime.mal_id)
+      .eq('user_id', user.id); // Extra safety check to ensure they own it
+
+    // Handle the result
+    if (error) {
+      console.error("Error deleting anime:", error);
+      alert("Something went wrong trying to delete this anime.");
+      return; // Stop here so it stays on the screen if the database fails
+    }
+
+    // If successful in the cloud, remove it from the local React state
+    dispatch({
+      type: 'REMOVE_ANIME',
+      payload: { id: anime.mal_id }
+    });
+  };
+
+  // --- NEW: Added the Supabase Episode Update logic ---
+  const handleIncrement = async () => {
+    // 1. Verify the user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      alert("You must be logged in to update progress!");
+      return;
+    }
+
+    // 2. Calculate the new progress and status
+    let newWatched = anime.watchedEpisodes + 1;
+    let newStatus = anime.status;
+
+    // Cap it at max episodes and auto-change status to 'Completed' if finished
+    if (anime.episodes && newWatched >= anime.episodes) {
+      newWatched = anime.episodes;
+      newStatus = 'Completed';
+    } else if (newStatus !== 'Watching') {
+      newStatus = 'Watching';
+    }
+
+    // 3. Send the update to Supabase (use lowercase for status)
+    const { error } = await supabase
+      .from('tracked_anime')
+      .update({ 
+        episodes_watched: newWatched,
+        status: newStatus.toLowerCase() 
+      })
+      .eq('mal_id', anime.mal_id)
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error("Error updating progress:", error);
+      alert("Something went wrong updating your episode count.");
+      return;
+    }
+
+    // 4. Update the local React state if the database succeeds
+    dispatch({ type: 'SET_EPISODES', payload: { id: anime.mal_id, episodes: newWatched } });
+  };
+  // ----------------------------------------------------
+
+  // --- NEW: Supabase Status Update ---
+  const handleStatusChange = async (newStatus) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      alert("You must be logged in to update status!");
+      return;
+    }
+
+    const { error } = await supabase
+      .from('tracked_anime')
+      .update({ status: newStatus.toLowerCase() })
+      .eq('mal_id', anime.mal_id)
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error("Error updating status:", error);
+      alert("Something went wrong updating the status.");
+      return;
+    }
+
+    dispatch({ type: 'UPDATE_STATUS', payload: { id: anime.mal_id, status: newStatus } });
+  };
+  // ------------------------------------
+
+  // --- NEW: Supabase Rating Update ---
+  const handleRatingChange = async (newRating) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      alert("You must be logged in to update rating!");
+      return;
+    }
+
+    const { error } = await supabase
+      .from('tracked_anime')
+      .update({ rating: newRating })
+      .eq('mal_id', anime.mal_id)
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error("Error updating rating:", error);
+      alert("Something went wrong updating the rating.");
+      return;
+    }
+
+    dispatch({ type: 'UPDATE_RATING', payload: { id: anime.mal_id, rating: newRating } });
+  };
+  // ------------------------------------
+
+  // --- NEW: Supabase Rewatch Increment ---
+  const handleRewatchIncrement = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      alert("You must be logged in to update rewatches!");
+      return;
+    }
+
+    const newRewatches = anime.rewatches + 1;
+
+    const { error } = await supabase
+      .from('tracked_anime')
+      .update({ rewatches: newRewatches })
+      .eq('mal_id', anime.mal_id)
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error("Error updating rewatches:", error);
+      alert("Something went wrong updating rewatches.");
+      return;
+    }
+
+    dispatch({ type: 'INCREMENT_REWATCH', payload: { id: anime.mal_id } });
+  };
+  // --------------------------------------
+
   const progressPercent = anime.episodes 
     ? Math.min(100, Math.round((anime.watchedEpisodes / anime.episodes) * 100)) 
     : 0;
@@ -14,7 +162,7 @@ export const AnimeCard = ({ anime }) => {
     <GlassCard className="flex flex-col sm:flex-row gap-5 p-5 relative group hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/20 hover:border-white/20 hover:bg-white/10 z-10">
       
       <button 
-        onClick={() => dispatch({ type: 'REMOVE_ANIME', payload: { id: anime.mal_id } })}
+        onClick={handleRemove}
         className="absolute top-4 right-4 text-slate-400 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all bg-black/40 backdrop-blur-md p-2 rounded-full border border-transparent hover:border-red-400/50 z-20"
       >
         <Trash2 size={16} />
@@ -38,7 +186,7 @@ export const AnimeCard = ({ anime }) => {
           <div className="flex flex-wrap items-center gap-3 mb-4">
             <select 
               value={anime.status}
-              onChange={(e) => dispatch({ type: 'UPDATE_STATUS', payload: { id: anime.mal_id, status: e.target.value } })}
+              onChange={(e) => handleStatusChange(e.target.value)}
               className="bg-black/40 text-slate-200 border border-white/10 rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 cursor-pointer backdrop-blur-md transition-all appearance-none"
               style={{ WebkitAppearance: 'none' }}
             >
@@ -61,8 +209,9 @@ export const AnimeCard = ({ anime }) => {
                 <span className="text-xs font-medium text-slate-300 tracking-wide uppercase">
                   Progress <span className="text-white ml-1 font-bold">{anime.watchedEpisodes}</span> / {anime.episodes || '?'}
                 </span>
+                {/* --- NEW: Wired up the handleIncrement function here --- */}
                 <button 
-                  onClick={() => dispatch({ type: 'INCREMENT_EPISODE', payload: { id: anime.mal_id } })}
+                  onClick={handleIncrement}
                   disabled={anime.episodes && anime.watchedEpisodes >= anime.episodes}
                   className="flex items-center gap-1 bg-indigo-500/80 hover:bg-indigo-500 disabled:opacity-30 disabled:cursor-not-allowed text-white text-xs font-bold px-3 py-1.5 rounded-lg border border-indigo-400/50 transition-all shadow-lg shadow-indigo-500/20"
                 >
@@ -89,7 +238,7 @@ export const AnimeCard = ({ anime }) => {
                   <Star size={14} className={anime.rating > 0 ? "text-amber-400 fill-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" : "text-slate-600"} />
                   <select 
                     value={anime.rating}
-                    onChange={(e) => dispatch({ type: 'UPDATE_RATING', payload: { id: anime.mal_id, rating: parseInt(e.target.value) } })}
+                    onChange={(e) => handleRatingChange(parseInt(e.target.value))}
                     className="bg-transparent text-white font-bold text-sm focus:outline-none cursor-pointer appearance-none"
                   >
                     <option value="0" className="bg-slate-900">Unrated</option>
@@ -103,7 +252,7 @@ export const AnimeCard = ({ anime }) => {
                 <div className="flex items-center gap-3">
                   <span className="font-bold text-white text-sm">{anime.rewatches}</span>
                   <button 
-                    onClick={() => dispatch({ type: 'INCREMENT_REWATCH', payload: { id: anime.mal_id } })}
+                    onClick={handleRewatchIncrement}
                     className="flex items-center gap-1 bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-md transition-colors"
                   >
                     <RefreshCw size={10} /> Add
