@@ -53,7 +53,7 @@ const animeReducer = (state, action) => {
         ...state,
         list: state.list.map(anime => {
           if (anime.mal_id !== action.payload.id) return anime;
-          let newWatched = anime.watchedEpisodes + 1;
+          const newWatched = anime.watchedEpisodes + 1;
           
           let newStatus = anime.status;
           if (anime.episodes && newWatched >= anime.episodes && newStatus !== 'Completed') {

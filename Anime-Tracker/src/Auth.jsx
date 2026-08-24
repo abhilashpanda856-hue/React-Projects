@@ -1,26 +1,45 @@
 import { useState } from 'react';
 import { supabase } from './supabaseClient';
+import { validateEmail, validatePassword } from './lib/validate';
+import { sanitizeError } from './lib/errors';
+import toast from 'react-hot-toast';
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const validateAndToast = (validation) => {
+    if (!validation.valid) {
+      toast.error(validation.error);
+      return false;
+    }
+    return true;
+  };
+
   const handleSignUp = async (e) => {
     e.preventDefault();
+    
+    if (!validateAndToast(validateEmail(email))) return;
+    if (!validateAndToast(validatePassword(password))) return;
+    
     setLoading(true);
     const { error } = await supabase.auth.signUp({ email, password });
-    if (error) alert(error.message);
-    else alert('Signup successful! You can now log in.');
+    if (error) toast.error(sanitizeError(error));
+    else toast.success('Signup successful! You can now log in.');
     setLoading(false);
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    
+    if (!validateAndToast(validateEmail(email))) return;
+    if (!validateAndToast(validatePassword(password))) return;
+    
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) alert(error.message);
-    else alert('Logged in successfully!');
+    if (error) toast.error(sanitizeError(error));
+    else toast.success('Logged in successfully!');
     setLoading(false);
   };
 
@@ -52,6 +71,7 @@ export default function Auth() {
           
           <div className="flex space-x-4">
             <button
+              type="button"
               onClick={handleLogin}
               disabled={loading}
               className="w-full py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
@@ -59,6 +79,7 @@ export default function Auth() {
               {loading ? 'Loading...' : 'Login'}
             </button>
             <button
+              type="button"
               onClick={handleSignUp}
               disabled={loading}
               className="w-full py-3 font-semibold text-blue-400 bg-transparent border border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white disabled:opacity-50"

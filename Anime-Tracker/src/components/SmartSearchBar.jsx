@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { Search, Plus, CheckCircle, RefreshCw, X } from 'lucide-react';
+import { Search, Plus, CheckCircle, RefreshCw, X, Loader2 } from 'lucide-react';
 import { AnimeContext } from '../context/AnimeContext';
 import { useDebounce } from '../hooks/useDebounce';
 import { supabase } from '../supabaseClient';
+import { validateAnimePayload } from '../lib/validate';
+import { sanitizeError, logError } from '../lib/errors';
+import toast from 'react-hot-toast';
 
 // Mock fallback data for when Jikan API is rate limited
 const MOCK_SEARCH_RESULTS = [
@@ -19,6 +22,7 @@ export const SmartSearchBar = () => {
   const [results, setResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [addingId, setAddingId] = useState(null);
   
   const debouncedQuery = useDebounce(query, 300);
   const { state, dispatch } = useContext(AnimeContext);
@@ -34,7 +38,7 @@ export const SmartSearchBar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-useEffect(() => {
+  useEffect(() => {
     const fetchAnime = async () => {
       if (!debouncedQuery.trim()) {
         setResults([]);
@@ -49,7 +53,7 @@ useEffect(() => {
         setResults(data.data || []);
         setShowDropdown(true);
       } catch (err) {
-        console.error("Search failed, using mock data:", err);
+        logError('Jikan search fallback', err);
         // Fallback to mock data when Jikan API fails (rate limit, 504, network error)
         const filteredMock = MOCK_SEARCH_RESULTS.filter(anime => 
           anime.title.toLowerCase().includes(debouncedQuery.toLowerCase())
@@ -69,11 +73,26 @@ useEffect(() => {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      alert("You must be logged in to save anime!");
+      toast.error("You must be logged in to save anime!");
       return;
     }
 
-    // B. Save the anime to the Supabase database
+    // B. Validate the anime payload before sending to DB
+    const validation = validateAnimePayload({
+      mal_id: anime.mal_id,
+      title: anime.title,
+      image: anime.images?.jpg?.image_url,
+      episodes: anime.episodes
+    });
+    if (!validation.valid) {
+      toast.error(validation.error);
+      return;
+    }
+
+    // C. Set loading state for this specific anime
+    setAddingId(anime.mal_id);
+
+    // D. Save the anime to the Supabase database
     const { error } = await supabase
       .from('tracked_anime')
       .insert([
@@ -86,18 +105,19 @@ useEffect(() => {
         }
       ]);
 
-    // C. Handle any database errors
+    // E. Handle any database errors
     if (error) {
+      setAddingId(null);
       if (error.code === '23505') {
-        alert(`${anime.title} is already in your watchlist!`);
+        toast(`${anime.title} is already in your watchlist!`, { icon: '⚠️' });
       } else {
-        console.error("Error saving anime:", error);
-        alert("Something went wrong saving the anime to the database.");
+        logError('Insert anime', error);
+        toast.error(sanitizeError(error));
       }
       return; // Stop here so it doesn't add to the local screen if the DB fails
     }
 
-    // D. If database save is successful, update the local React state (Context)
+    // F. If database save is successful, update the local React state (Context)
     dispatch({
       type: 'ADD_ANIME',
       payload: {
@@ -108,9 +128,12 @@ useEffect(() => {
       }
     });
     
-    // E. Reset the search bar
+    toast.success('Anime added to your watchlist!');
+    
+    // G. Reset the search bar
     setQuery('');
     setShowDropdown(false);
+    setAddingId(null);
   };
 
   return (
@@ -160,15 +183,19 @@ useEffect(() => {
                       <span className="text-slate-400 text-xs">{anime.episodes ? `${anime.episodes} Episodes` : 'Ongoing'}</span>
                     </div>
                     <button 
-                      onMouseDown={( e ) => { e.preventDefault(); handleAdd( anime ); }}
-                      disabled={isInList}
+                      onClick={() => handleAdd(anime)}
+                      disabled={isInList || addingId === anime.mal_id}
                       className={`p-2 rounded-full transition-all flex-shrink-0 ${
                         isInList 
                           ? 'bg-white/5 text-slate-500 cursor-not-allowed' 
                           : 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500 hover:text-white border border-indigo-500/30'
                       }`}
                     >
-                      {isInList ? <CheckCircle size={16} /> : <Plus size={16} />}
+                      {isInList 
+                        ? <CheckCircle size={16} /> 
+                        : addingId === anime.mal_id 
+                          ? <Loader2 size={16} className="animate-spin" />
+                          : <Plus size={16} />}
                     </button>
                   </div>
                 )

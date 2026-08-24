@@ -5,9 +5,11 @@ import { SmartSearchBar } from './SmartSearchBar';
 import { AnimeCard } from './AnimeCard';
 import { GlassCard } from './GlassCard';
 import { supabase } from '../supabaseClient'; // Imported Supabase client
+import { logError } from '../lib/errors';
 
 export const TrackerApp = () => {
   const [listFilter, setListFilter] = useState('All');
+  const [isLoading, setIsLoading] = useState(true);
   // Added 'dispatch' here so we can send the database data into your React state
   const { state, dispatch } = useContext(AnimeContext); 
   const myList = state.list || [];
@@ -15,6 +17,7 @@ export const TrackerApp = () => {
   // --- NEW SUPABASE FETCH LOGIC ---
   useEffect(() => {
     const fetchMyWatchlist = async () => {
+      setIsLoading(true);
       // 1. Get the currently logged-in user
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -26,7 +29,7 @@ export const TrackerApp = () => {
           .eq('user_id', user.id);
 
         if (error) {
-          console.error("Error fetching watchlist:", error);
+          logError('Fetch watchlist', error);
         } else if (data) {
           // 3. Map Supabase fields to Context format
           const mappedData = data.map(anime => ({
@@ -47,6 +50,7 @@ export const TrackerApp = () => {
           });
         }
       }
+      setIsLoading(false);
     };
 
     fetchMyWatchlist();
@@ -128,7 +132,24 @@ export const TrackerApp = () => {
               ))}
             </div>
 
-            {filteredList.length === 0 && (
+            {isLoading ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {[1, 2, 3, 4].map(i => (
+                  <GlassCard key={i} className="flex flex-col sm:flex-row gap-5 p-5">
+                    <div className="relative w-full sm:w-36 h-64 sm:h-52 shrink-0 rounded-xl overflow-hidden">
+                      <div className="w-full h-full bg-slate-800 animate-pulse" />
+                    </div>
+                    <div className="flex-1 flex flex-col justify-between">
+                      <div>
+                        <div className="h-6 bg-slate-800 rounded w-3/4 animate-pulse mb-2" />
+                        <div className="h-4 bg-slate-800 rounded w-1/2 animate-pulse" />
+                      </div>
+                      <div className="h-8 bg-slate-800 rounded w-1/3 animate-pulse" />
+                    </div>
+                  </GlassCard>
+                ))}
+              </div>
+            ) : filteredList.length === 0 ? (
               <GlassCard className="text-center py-24 px-4 border-dashed border-white/20 max-w-2xl mx-auto">
                 <div className="bg-white/5 p-6 rounded-full inline-block mb-6 shadow-inner border border-white/10">
                   <MonitorPlay className="text-indigo-400/50" size={56} />
@@ -140,13 +161,13 @@ export const TrackerApp = () => {
                     : `No anime found in the "${listFilter}" category.`}
                 </p>
               </GlassCard>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {filteredList.map((anime, index) => (
+                  <AnimeCard key={`${anime.mal_id}-${index}`} anime={anime} />
+                ))}
+              </div>
             )}
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {filteredList.map((anime, index) => (
-                <AnimeCard key={`${anime.mal_id}-${index}`} anime={anime} />
-              ))}
-            </div>
 
           </div>
         </main>

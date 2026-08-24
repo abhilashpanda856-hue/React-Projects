@@ -24,6 +24,16 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // Security & quality rules
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-alert': 'error',
+      'require-await': 'warn',
+      'no-return-await': 'error',
+      'no-unused-expressions': ['error', { allowShortCircuit: true, allowTernary: true }],
+      'prefer-const': 'error',
+      'no-var': 'error',
+      // Allow React context + provider in same file (standard pattern)
+      'react-refresh/only-export-components': ['off'],
     },
   },
 ])

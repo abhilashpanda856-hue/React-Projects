@@ -1,11 +1,19 @@
-import React, { useContext } from 'react';
-import { Trash2, Plus, Star, RefreshCw } from 'lucide-react';
+import React, { useContext, useState } from 'react';
+import { Trash2, Plus, Star, RefreshCw, Loader2 } from 'lucide-react';
 import { AnimeContext } from '../context/AnimeContext';
 import { GlassCard } from './GlassCard';
 import { supabase } from '../supabaseClient';
+import { validateStatus, validateRating, validateEpisodes, validateRewatches } from '../lib/validate';
+import { sanitizeError, logError } from '../lib/errors';
+import toast from 'react-hot-toast';
 
 export const AnimeCard = ({ anime }) => {
   const { dispatch } = useContext(AnimeContext);
+  const [deleting, setDeleting] = useState(false);
+  const [incrementing, setIncrementing] = useState(false);
+  const [changingStatus, setChangingStatus] = useState(false);
+  const [changingRating, setChangingRating] = useState(false);
+  const [incrementingRewatch, setIncrementingRewatch] = useState(false);
   
   // Added the Supabase deletion logic
   const handleRemove = async () => {
@@ -13,10 +21,12 @@ export const AnimeCard = ({ anime }) => {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      alert("You must be logged in to delete anime!");
+      toast.error("You must be logged in to delete anime!");
       return;
     }
 
+    setDeleting(true);
+    
     // Tell Supabase to delete this specific anime from the database
     const { error } = await supabase
       .from('tracked_anime')
@@ -26,8 +36,9 @@ export const AnimeCard = ({ anime }) => {
 
     // Handle the result
     if (error) {
-      console.error("Error deleting anime:", error);
-      alert("Something went wrong trying to delete this anime.");
+      setDeleting(false);
+      logError('Delete anime', error);
+      toast.error(sanitizeError(error));
       return; // Stop here so it stays on the screen if the database fails
     }
 
@@ -36,6 +47,9 @@ export const AnimeCard = ({ anime }) => {
       type: 'REMOVE_ANIME',
       payload: { id: anime.mal_id }
     });
+    
+    toast.success('Anime removed from watchlist');
+    setDeleting(false);
   };
 
   // --- NEW: Added the Supabase Episode Update logic ---
@@ -43,7 +57,7 @@ export const AnimeCard = ({ anime }) => {
     // 1. Verify the user
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      alert("You must be logged in to update progress!");
+      toast.error("You must be logged in to update progress!");
       return;
     }
 
@@ -59,7 +73,21 @@ export const AnimeCard = ({ anime }) => {
       newStatus = 'Watching';
     }
 
-    // 3. Send the update to Supabase (use lowercase for status)
+    // 3. Validate before sending
+    const epValidation = validateEpisodes(newWatched, anime.episodes);
+    if (!epValidation.valid) {
+      toast.error(epValidation.error);
+      return;
+    }
+    const statusValidation = validateStatus(newStatus);
+    if (!statusValidation.valid) {
+      toast.error(statusValidation.error);
+      return;
+    }
+
+    setIncrementing(true);
+
+    // 4. Send the update to Supabase (use lowercase for status)
     const { error } = await supabase
       .from('tracked_anime')
       .update({ 
@@ -70,13 +98,16 @@ export const AnimeCard = ({ anime }) => {
       .eq('user_id', user.id);
 
     if (error) {
-      console.error("Error updating progress:", error);
-      alert("Something went wrong updating your episode count.");
+      setIncrementing(false);
+      logError('Update progress', error);
+      toast.error(sanitizeError(error));
       return;
     }
 
-    // 4. Update the local React state if the database succeeds
+    // 5. Update the local React state if the database succeeds
     dispatch({ type: 'SET_EPISODES', payload: { id: anime.mal_id, episodes: newWatched } });
+    toast.success('Progress updated!');
+    setIncrementing(false);
   };
   // ----------------------------------------------------
 
@@ -84,9 +115,18 @@ export const AnimeCard = ({ anime }) => {
   const handleStatusChange = async (newStatus) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      alert("You must be logged in to update status!");
+      toast.error("You must be logged in to update status!");
       return;
     }
+
+    // Validate before sending
+    const statusValidation = validateStatus(newStatus);
+    if (!statusValidation.valid) {
+      toast.error(statusValidation.error);
+      return;
+    }
+
+    setChangingStatus(true);
 
     const { error } = await supabase
       .from('tracked_anime')
@@ -95,12 +135,15 @@ export const AnimeCard = ({ anime }) => {
       .eq('user_id', user.id);
 
     if (error) {
-      console.error("Error updating status:", error);
-      alert("Something went wrong updating the status.");
+      setChangingStatus(false);
+      logError('Update status', error);
+      toast.error(sanitizeError(error));
       return;
     }
 
     dispatch({ type: 'UPDATE_STATUS', payload: { id: anime.mal_id, status: newStatus } });
+    toast.success('Status updated!');
+    setChangingStatus(false);
   };
   // ------------------------------------
 
@@ -108,9 +151,18 @@ export const AnimeCard = ({ anime }) => {
   const handleRatingChange = async (newRating) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      alert("You must be logged in to update rating!");
+      toast.error("You must be logged in to update rating!");
       return;
     }
+
+    // Validate before sending
+    const ratingValidation = validateRating(newRating);
+    if (!ratingValidation.valid) {
+      toast.error(ratingValidation.error);
+      return;
+    }
+
+    setChangingRating(true);
 
     const { error } = await supabase
       .from('tracked_anime')
@@ -119,12 +171,15 @@ export const AnimeCard = ({ anime }) => {
       .eq('user_id', user.id);
 
     if (error) {
-      console.error("Error updating rating:", error);
-      alert("Something went wrong updating the rating.");
+      setChangingRating(false);
+      logError('Update rating', error);
+      toast.error(sanitizeError(error));
       return;
     }
 
     dispatch({ type: 'UPDATE_RATING', payload: { id: anime.mal_id, rating: newRating } });
+    toast.success('Rating updated!');
+    setChangingRating(false);
   };
   // ------------------------------------
 
@@ -132,11 +187,20 @@ export const AnimeCard = ({ anime }) => {
   const handleRewatchIncrement = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      alert("You must be logged in to update rewatches!");
+      toast.error("You must be logged in to update rewatches!");
       return;
     }
 
     const newRewatches = anime.rewatches + 1;
+
+    // Validate before sending
+    const rewatchValidation = validateRewatches(newRewatches);
+    if (!rewatchValidation.valid) {
+      toast.error(rewatchValidation.error);
+      return;
+    }
+
+    setIncrementingRewatch(true);
 
     const { error } = await supabase
       .from('tracked_anime')
@@ -145,12 +209,15 @@ export const AnimeCard = ({ anime }) => {
       .eq('user_id', user.id);
 
     if (error) {
-      console.error("Error updating rewatches:", error);
-      alert("Something went wrong updating rewatches.");
+      setIncrementingRewatch(false);
+      logError('Update rewatches', error);
+      toast.error(sanitizeError(error));
       return;
     }
 
     dispatch({ type: 'INCREMENT_REWATCH', payload: { id: anime.mal_id } });
+    toast.success('Rewatch count updated!');
+    setIncrementingRewatch(false);
   };
   // --------------------------------------
 
@@ -163,9 +230,10 @@ export const AnimeCard = ({ anime }) => {
       
       <button 
         onClick={handleRemove}
-        className="absolute top-4 right-4 text-slate-400 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all bg-black/40 backdrop-blur-md p-2 rounded-full border border-transparent hover:border-red-400/50 z-20"
+        disabled={deleting}
+        className="absolute top-4 right-4 text-slate-400 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all bg-black/40 backdrop-blur-md p-2 rounded-full border border-transparent hover:border-red-400/50 z-20 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <Trash2 size={16} />
+        {deleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
       </button>
 
       <div className="relative w-full sm:w-36 h-64 sm:h-52 shrink-0 rounded-xl overflow-hidden">
@@ -187,7 +255,8 @@ export const AnimeCard = ({ anime }) => {
             <select 
               value={anime.status}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className="bg-black/40 text-slate-200 border border-white/10 rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 cursor-pointer backdrop-blur-md transition-all appearance-none"
+              disabled={changingStatus}
+              className="bg-black/40 text-slate-200 border border-white/10 rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 cursor-pointer backdrop-blur-md transition-all appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ WebkitAppearance: 'none' }}
             >
               <option value="Watching" className="bg-slate-900">Watching</option>
@@ -212,10 +281,10 @@ export const AnimeCard = ({ anime }) => {
                 {/* --- NEW: Wired up the handleIncrement function here --- */}
                 <button 
                   onClick={handleIncrement}
-                  disabled={anime.episodes && anime.watchedEpisodes >= anime.episodes}
+                  disabled={anime.episodes && anime.watchedEpisodes >= anime.episodes || incrementing}
                   className="flex items-center gap-1 bg-indigo-500/80 hover:bg-indigo-500 disabled:opacity-30 disabled:cursor-not-allowed text-white text-xs font-bold px-3 py-1.5 rounded-lg border border-indigo-400/50 transition-all shadow-lg shadow-indigo-500/20"
                 >
-                  <Plus size={14} /> 1 Ep
+                  {incrementing ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />} 1 Ep
                 </button>
               </div>
               
@@ -239,7 +308,8 @@ export const AnimeCard = ({ anime }) => {
                   <select 
                     value={anime.rating}
                     onChange={(e) => handleRatingChange(parseInt(e.target.value))}
-                    className="bg-transparent text-white font-bold text-sm focus:outline-none cursor-pointer appearance-none"
+                    disabled={changingRating}
+                    className="bg-transparent text-white font-bold text-sm focus:outline-none cursor-pointer appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <option value="0" className="bg-slate-900">Unrated</option>
                     {[1,2,3,4,5,6,7,8,9,10].map(num => <option key={num} value={num} className="bg-slate-900">{num} / 10</option>)}
@@ -253,9 +323,10 @@ export const AnimeCard = ({ anime }) => {
                   <span className="font-bold text-white text-sm">{anime.rewatches}</span>
                   <button 
                     onClick={handleRewatchIncrement}
-                    className="flex items-center gap-1 bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-md transition-colors"
+                    disabled={incrementingRewatch}
+                    className="flex items-center gap-1 bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-md transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   >
-                    <RefreshCw size={10} /> Add
+                    {incrementingRewatch ? <Loader2 size={10} className="animate-spin" /> : <RefreshCw size={10} />} Add
                   </button>
                 </div>
               </div>
