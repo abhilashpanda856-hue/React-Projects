@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#0c0a09] text-slate-100 min-h-screen overflow-x-hidden font-sans antialiased selection:bg-amber-500 selection:text-black;
+  }
+}
+
+/* Custom glow and sci-fi aesthetic utilities */
+.text-glow-amber {
+  text-shadow: 0 0 15px rgba(245, 158, 11, 0.6), 0 0 30px rgba(217, 119, 6, 0.4);
+}
+
+.text-glow-spice {
+  text-shadow: 0 0 20px rgba(251, 191, 36, 0.8), 0 0 40px rgba(217, 119, 6, 0.5);
+}
+
+.text-glow-red {
+  text-shadow: 0 0 15px rgba(239, 68, 68, 0.7), 0 0 30px rgba(185, 28, 28, 0.5);
+}
+
+.text-glow-blue {
+  text-shadow: 0 0 15px rgba(59, 130, 246, 0.7), 0 0 30px rgba(29, 78, 216, 0.5);
+}
+
+.box-glow-amber {
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.25), inset 0 0 15px rgba(245, 158, 11, 0.1);
+}
+
+.box-glow-red {
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.3), inset 0 0 15px rgba(239, 68, 68, 0.15);
+}
+
+.box-glow-blue {
+  box-shadow: 0 0 25px rgba(59, 130, 246, 0.25), inset 0 0 15px rgba(59, 130, 246, 0.1);
+}
+
+/* Custom scanline overlay */
+.scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+}
+

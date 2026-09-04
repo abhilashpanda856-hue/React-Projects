@@ -1,0 +1,147 @@
+import React from 'react';
+import { Skull, Users, Brain, Shield, Heart, Target, ChevronRight, RotateCcw } from 'lucide-react';
+
+const COMRADE_ICONS = {
+  'Sayyadina (Healer)': <Heart className="w-6 h-6 text-rose-400" />,
+  'Fedaykin (Commando)': <Target className="w-6 h-6 text-amber-400" />,
+  'Desert Scout': <Shield className="w-6 h-6 text-sky-400" />,
+};
+
+export default function RoleRevealScreen({ selectedRole, comrades, onProceedToTrial, onReset }) {
+  // Harkonnen bad ending branch
+  if (selectedRole === 'HARKONNEN') {
+    return (
+      <div className="w-full max-w-2xl mx-auto text-center space-y-8 p-8 sm:p-10 bg-rose-950/40 border border-rose-800/80 rounded-2xl shadow-[0_0_50px_rgba(225,29,72,0.3)] backdrop-blur-md animate-fade-in">
+        <div className="w-20 h-20 mx-auto rounded-full bg-rose-500/10 border border-rose-500/40 flex items-center justify-center text-rose-500 shadow-[0_0_30px_rgba(244,63,94,0.3)] animate-pulse">
+          <Skull className="w-10 h-10" />
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-xs font-mono tracking-[0.3em] uppercase text-rose-400">
+            Desert Judgment Verdict
+          </p>
+          <h2 className="text-4xl sm:text-5xl font-black font-cinzel text-rose-500 text-glow-red">
+            HOUSE HARKONNEN
+          </h2>
+        </div>
+
+        <p className="text-stone-300 italic text-lg leading-relaxed bg-stone-950/60 p-5 rounded-xl border border-rose-900/50">
+          "You stepped on others to climb the ranks. You stole credit and spread lies. But the desert does not respect false kings."
+        </p>
+
+        <p className="text-amber-400/90 font-medium text-sm sm:text-base">
+          A massive Sandworm senses your overwhelming Arrogance. It bursts from the sands and swallows you whole before the trial even begins.
+        </p>
+
+        <div className="pt-4">
+          <button
+            onClick={onReset}
+            className="inline-flex items-center gap-2 px-8 py-3.5 bg-rose-800 hover:bg-rose-700 text-white font-cinzel font-bold rounded-lg shadow-lg hover:shadow-rose-900/50 transition-all active:scale-95 uppercase tracking-wider"
+          >
+            <RotateCcw className="w-4 h-4" />
+            <span>Restart Journey</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const isFremen = selectedRole === 'FREMEN';
+
+  return (
+    <div className="text-center space-y-8 max-w-3xl mx-auto animate-fade-in-up">
+      <div className="space-y-2">
+        <h3 className="text-amber-500 font-mono text-xs sm:text-sm font-bold tracking-[0.3em] uppercase text-glow-amber">
+          THE DESERT HAS JUDGED YOU
+        </h3>
+        <h2
+          className={`text-4xl sm:text-6xl font-black font-cinzel tracking-wider ${
+            isFremen
+              ? 'text-sky-400 text-glow-blue'
+              : 'text-purple-400'
+          }`}
+        >
+          {isFremen ? 'THE FREMEN TRIBE' : 'THE MENTAT'}
+        </h2>
+      </div>
+
+      <p className="text-lg sm:text-xl text-stone-300 italic max-w-2xl mx-auto leading-relaxed bg-stone-900/50 p-5 rounded-xl border border-stone-800">
+        {isFremen
+          ? `"You did not walk the desert alone. You built a tribe. The friends you made are now your vanguard. Stand together, or fall together."`
+          : `"You rejected the pack. You are the shadow monarch of your own destiny. Your mind is a weapon, but you have no shield. One mistake, and you fall."`}
+      </p>
+
+      {/* Fremen Vanguard Details */}
+      {isFremen && (
+        <div className="bg-stone-900/80 p-6 sm:p-8 rounded-2xl border border-sky-900/60 shadow-[0_0_30px_rgba(56,189,248,0.1)]">
+          <div className="flex items-center justify-center gap-2 text-sky-400 font-bold font-cinzel text-lg mb-6">
+            <Users className="w-5 h-5" />
+            <h4>Vanguard Unlocked ({comrades.length}/3)</h4>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {comrades.length > 0 ? (
+              comrades.map((c, i) => (
+                <div
+                  key={i}
+                  className="flex flex-col items-center gap-2 bg-stone-950/80 p-4 rounded-xl border border-stone-800 hover:border-sky-500/50 transition-all hover:scale-105 shadow-sm"
+                >
+                  <div className="w-12 h-12 rounded-full bg-stone-900 flex items-center justify-center border border-stone-700">
+                    {COMRADE_ICONS[c.type] || c.icon}
+                  </div>
+                  <span className="font-bold text-white tracking-wide">{c.type}</span>
+                  <span className="text-xs text-stone-400 text-center">{c.desc}</span>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-3 text-stone-500 italic py-4">
+                Your friendship wasn't strong enough to summon any vanguard comrades. You face the sand alone.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Mentat Perks Details */}
+      {!isFremen && (
+        <div className="bg-stone-900/80 p-6 sm:p-8 rounded-2xl border border-purple-900/60 shadow-[0_0_30px_rgba(168,85,247,0.1)]">
+          <div className="flex items-center justify-center gap-2 text-purple-400 font-bold font-cinzel text-lg mb-4">
+            <Brain className="w-5 h-5" />
+            <h4>Glass Cannon Mode Activated</h4>
+          </div>
+          <p className="text-xs text-stone-400 font-mono mb-4">
+            Supreme cognitive discipline yields unmatched devastation at extreme vulnerability.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+            <div className="bg-stone-950/80 p-4 rounded-xl border border-stone-800">
+              <div className="text-amber-400 font-bold text-sm mb-1">⚔️ Calculation Multiplier</div>
+              <div className="text-2xl font-mono font-bold text-emerald-400">2.5x</div>
+              <p className="text-xs text-stone-400 mt-1">Massive multiplier on correct answers</p>
+            </div>
+            <div className="bg-stone-950/80 p-4 rounded-xl border border-stone-800">
+              <div className="text-rose-400 font-bold text-sm mb-1">🛡️ Frail Constitution</div>
+              <div className="text-2xl font-mono font-bold text-rose-400">Low HP</div>
+              <p className="text-xs text-stone-400 mt-1">Stamina only provides half bonus HP</p>
+            </div>
+            <div className="bg-stone-950/80 p-4 rounded-xl border border-stone-800">
+              <div className="text-stone-400 font-bold text-sm mb-1">👥 Zero Reinforcements</div>
+              <div className="text-2xl font-mono font-bold text-stone-300">Solo</div>
+              <p className="text-xs text-stone-400 mt-1">No shields or heals to save you</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Button */}
+      <div className="pt-2">
+        <button
+          onClick={onProceedToTrial}
+          className="inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 text-stone-950 font-cinzel font-bold text-lg rounded tracking-widest uppercase transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] border-b-4 border-amber-800 active:border-b-0 active:translate-y-1"
+        >
+          <span>Face Shai-Hulud</span>
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      </div>
+    </div>
+  );
+}
