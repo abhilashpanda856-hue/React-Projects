@@ -33,13 +33,7 @@ export default function GameOverScreen({ bossDamageDealt, selectedRole, onReset 
       </div>
 
       <div className="pt-2">
-        <button
-          onClick={onReset}
-          className="inline-flex items-center gap-2 px-8 py-3.5 bg-rose-800 hover:bg-rose-700 text-white font-cinzel font-bold rounded-lg shadow-lg hover:shadow-rose-900/40 transition-all active:scale-95 uppercase tracking-wider text-sm"
-        >
-          <RotateCcw className="w-4 h-4" />
-          <span>Try Again</span>
-        </button>
+        <p className="text-stone-400 animate-pulse">Waiting for Admin...</p>
       </div>
     </div>
   );

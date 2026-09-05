@@ -29,16 +29,7 @@ export default function Header({ currentStep, stats, onReset }) {
           </div>
         </div>
 
-        {currentStep !== 'INTRO' && (
-          <button
-            onClick={onReset}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono text-stone-400 hover:text-amber-400 bg-stone-900/60 hover:bg-stone-800 border border-stone-800 hover:border-amber-500/30 rounded-md transition-all duration-200"
-            title="Reset Simulation"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>RESET</span>
-          </button>
-        )}
+        {/* Reset button removed for multiplayer mode */}
       </div>
 
       {/* Global Stat HUD (visible whenever stats matter) */}

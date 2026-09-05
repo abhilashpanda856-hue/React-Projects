@@ -34,13 +34,7 @@ export default function RoleRevealScreen({ selectedRole, comrades, onProceedToTr
         </p>
 
         <div className="pt-4">
-          <button
-            onClick={onReset}
-            className="inline-flex items-center gap-2 px-8 py-3.5 bg-rose-800 hover:bg-rose-700 text-white font-cinzel font-bold rounded-lg shadow-lg hover:shadow-rose-900/50 transition-all active:scale-95 uppercase tracking-wider"
-          >
-            <RotateCcw className="w-4 h-4" />
-            <span>Restart Journey</span>
-          </button>
+          <p className="text-stone-400 animate-pulse">Waiting for Admin...</p>
         </div>
       </div>
     );
@@ -134,13 +128,7 @@ export default function RoleRevealScreen({ selectedRole, comrades, onProceedToTr
 
       {/* Button */}
       <div className="pt-2">
-        <button
-          onClick={onProceedToTrial}
-          className="inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 text-stone-950 font-cinzel font-bold text-lg rounded tracking-widest uppercase transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] border-b-4 border-amber-800 active:border-b-0 active:translate-y-1"
-        >
-          <span>Face Shai-Hulud</span>
-          <ChevronRight className="w-5 h-5" />
-        </button>
+        <p className="text-stone-400 animate-pulse">Waiting for Admin to proceed to Trial...</p>
       </div>
     </div>
   );

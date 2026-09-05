@@ -88,15 +88,9 @@ export default function SummaryScreen({ bossDamageDealt, selectedRole, comrades 
         </div>
       </div>
 
-      <div className="pt-2">
-        <button
-          onClick={onReset}
-          className="inline-flex items-center gap-2 px-8 py-4 bg-stone-800 hover:bg-stone-700 hover:border-amber-500/40 border border-stone-700 text-white font-cinzel font-bold text-sm tracking-wider uppercase rounded-xl transition-all shadow-lg active:scale-95"
-        >
-          <RotateCcw className="w-4 h-4" />
-          <span>Reset Simulation</span>
-        </button>
-      </div>
+        <div className="mt-8 flex justify-center w-full">
+          <p className="text-stone-400 animate-pulse">Waiting for Admin...</p>
+        </div>
     </div>
   );
 }

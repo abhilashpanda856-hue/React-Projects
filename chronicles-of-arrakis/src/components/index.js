@@ -10,3 +10,5 @@ export { default as TrialScreen } from './TrialScreen';
 export { default as GameOverScreen } from './GameOverScreen';
 export { default as SummaryScreen } from './SummaryScreen';
 export { default as CountdownTimer } from './CountdownTimer';
+export { default as NameEntryScreen } from './NameEntryScreen';
+export { default as LeaderboardScreen } from './LeaderboardScreen';
