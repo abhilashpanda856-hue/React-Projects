@@ -45,7 +45,7 @@ export default function Game() {
     let initialHp = 100;
 
     if (
-      finalStats.arrogance >= 35 ||
+      finalStats.arrogance >= 50 ||
       finalStats.arrogance > (finalStats.friendship + finalStats.int) / 2
     ) {
       role = 'HARKONNEN';
@@ -53,19 +53,19 @@ export default function Game() {
       role = 'FREMEN';
       initialHp = 150 + finalStats.stamina;
 
-      if (finalStats.friendship >= 20) {
+      if (finalStats.friendship >= 40) {
         unlockedComrades.push({
           type: 'Sayyadina (Healer)',
           desc: 'Administers healing waters (Restores 20 HP)',
         });
       }
-      if (finalStats.friendship >= 35) {
+      if (finalStats.friendship >= 70) {
         unlockedComrades.push({
           type: 'Fedaykin (Commando)',
           desc: 'Elite desert warrior (+15 bonus damage)',
         });
       }
-      if (finalStats.friendship >= 50) {
+      if (finalStats.friendship >= 100) {
         unlockedComrades.push({
           type: 'Desert Scout',
           desc: 'Reads the sands (Dodges 1 wrong answer)',
@@ -127,7 +127,7 @@ export default function Game() {
         const hasFedaykin = comrades.some((c) => c.type === 'Fedaykin (Commando)');
         if (hasFedaykin) {
           damage += 15;
-          message = `Fedaykin commandos strike from the shadows! Dealt ${damage} damage!`;
+          message = `Tribe strikes together! Fedaykin commandos strike from the shadows! Dealt ${damage} damage!`;
         } else {
           message = `Solid hit! Dealt ${damage} damage!`;
         }
@@ -170,7 +170,7 @@ export default function Game() {
         });
         setCombatMessage('The Sayyadina administers the water of life! Recovered 20 HP.');
         setSupportUsed(true);
-      }, 1400);
+      }, 1500);
     }
 
     setTimeout(() => {
@@ -276,6 +276,7 @@ export default function Game() {
           <SummaryScreen
             bossDamageDealt={bossDamageDealt}
             selectedRole={selectedRole}
+            comrades={comrades}
             onReset={handleReset}
           />
         )}

@@ -7,7 +7,7 @@ export default function GrindingScreen({ scenario, currentIndex, totalScenarios,
       <div className="space-y-2">
         <div className="flex justify-between items-center text-xs font-mono text-stone-400">
           <span className="text-amber-500 font-bold tracking-widest uppercase">
-            Scenario 0{currentIndex + 1}
+            Scenario {String(currentIndex + 1).padStart(2, '0')}
           </span>
           <span>{currentIndex + 1} of {totalScenarios} Decisions</span>
         </div>

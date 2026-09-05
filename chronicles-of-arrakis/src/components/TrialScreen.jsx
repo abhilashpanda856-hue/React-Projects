@@ -104,7 +104,9 @@ export default function TrialScreen({
       {combatMessage ? (
         <div
           className={`text-center p-10 sm:p-14 rounded-2xl border backdrop-blur-md transition-all duration-300 ${
-            combatMessage.includes('WRONG')
+            combatMessage.includes('Desert Scout')
+              ? 'bg-sky-950/40 border-sky-500 shadow-[0_0_40px_rgba(56,189,248,0.3)] animate-pulse'
+              : combatMessage.includes('WRONG')
               ? 'bg-rose-950/40 border-rose-600 shadow-[0_0_40px_rgba(225,29,72,0.3)] animate-shake'
               : combatMessage.includes('CRITICAL') || combatMessage.includes('Fedaykin')
               ? 'bg-amber-950/40 border-amber-500 shadow-[0_0_40px_rgba(245,158,11,0.3)] animate-pulse'
@@ -116,7 +118,13 @@ export default function TrialScreen({
           <div className="inline-flex items-center justify-center p-3 rounded-full bg-stone-950/80 mb-4">
             <Swords
               className={`w-8 h-8 ${
-                combatMessage.includes('WRONG') ? 'text-rose-500' : 'text-amber-400'
+                combatMessage.includes('Desert Scout')
+                  ? 'text-sky-400'
+                  : combatMessage.includes('Sayyadina')
+                  ? 'text-emerald-400'
+                  : combatMessage.includes('WRONG')
+                  ? 'text-rose-500'
+                  : 'text-amber-400'
               }`}
             />
           </div>

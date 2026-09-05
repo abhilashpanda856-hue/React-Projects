@@ -19,7 +19,7 @@ export default function GameOverScreen({ bossDamageDealt, selectedRole, onReset 
 
       <p className="text-stone-300 text-sm sm:text-base leading-relaxed bg-stone-950/60 p-4 rounded-xl border border-stone-800">
         {selectedRole === 'MENTAT'
-          ? 'Your calculations failed. With no tribe to shield you from harm, you fell before the mighty Maker.'
+          ? 'Your calculations failed. With no vanguard to protect you, you fell to the Maker.'
           : 'Your tribe was overwhelmed. Even with solidarity, Shai-Hulud proved insurmountable.'}
       </p>
 

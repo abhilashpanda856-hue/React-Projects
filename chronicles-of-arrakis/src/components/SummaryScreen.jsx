@@ -1,23 +1,23 @@
 import React from 'react';
-import { Trophy, Flame, RotateCcw } from 'lucide-react';
+import { Trophy, Flame, RotateCcw, Heart, Shield, Target } from 'lucide-react';
 
-export default function SummaryScreen({ bossDamageDealt, selectedRole, onReset }) {
+export default function SummaryScreen({ bossDamageDealt, selectedRole, comrades = [], onReset }) {
   let rank = 'Initiate';
   let rankColor = 'text-stone-400';
   let badgeColor = 'border-stone-700 bg-stone-900/60';
 
-  if (bossDamageDealt > 300) {
+  if (bossDamageDealt > 400) {
     rank = 'Lisan al Gaib (1st Tier)';
     rankColor = 'text-amber-400 text-glow-amber';
     badgeColor = 'border-amber-500/50 bg-amber-500/10 shadow-[0_0_30px_rgba(245,158,11,0.2)]';
-  } else if (bossDamageDealt > 200) {
+  } else if (bossDamageDealt > 250) {
     rank = 'Fedaykin Warrior (2nd Tier)';
-    rankColor = 'text-emerald-400';
-    badgeColor = 'border-emerald-500/50 bg-emerald-500/10 shadow-[0_0_30px_rgba(16,185,129,0.2)]';
+    rankColor = 'text-purple-400';
+    badgeColor = 'border-purple-500/50 bg-purple-500/10 shadow-[0_0_30px_rgba(168,85,247,0.2)]';
   } else if (bossDamageDealt > 100) {
     rank = 'Desert Survivor (3rd Tier)';
-    rankColor = 'text-sky-400';
-    badgeColor = 'border-sky-500/50 bg-sky-500/10 shadow-[0_0_30px_rgba(56,189,248,0.2)]';
+    rankColor = 'text-emerald-400';
+    badgeColor = 'border-emerald-500/50 bg-emerald-500/10 shadow-[0_0_30px_rgba(16,185,129,0.2)]';
   }
 
   return (
@@ -46,9 +46,24 @@ export default function SummaryScreen({ bossDamageDealt, selectedRole, onReset }
             <div className="text-xs text-stone-400 uppercase font-mono tracking-wider mb-1">
               Final Archetype
             </div>
-            <div className="text-xl font-bold font-cinzel text-white">
+            <div className={`text-xl font-bold font-cinzel ${selectedRole === 'FREMEN' ? 'text-sky-400' : 'text-purple-400'}`}>
               {selectedRole}
             </div>
+            {comrades.length > 0 && (
+              <div className="flex items-center justify-center gap-2 mt-2 pt-2 border-t border-stone-800/60">
+                {comrades.map((c, i) => (
+                  <span
+                    key={i}
+                    title={`${c.type}: ${c.desc}`}
+                    className="p-1.5 bg-stone-900 rounded-lg border border-stone-700/80 flex items-center justify-center"
+                  >
+                    {c.type === 'Desert Scout' && <Shield className="w-4 h-4 text-sky-400" />}
+                    {c.type === 'Sayyadina (Healer)' && <Heart className="w-4 h-4 text-rose-400" />}
+                    {c.type === 'Fedaykin (Commando)' && <Target className="w-4 h-4 text-amber-400" />}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="bg-stone-950/70 p-4 rounded-xl border border-stone-800/80">
