@@ -23,9 +23,11 @@ import {
 } from '../data/gameData';
 
 export default function Game() {
-  const gameState = useGameState();
-  const currentStep = gameState.status; // WAITING, INTRO, GRINDING, LEADERBOARD, REVEAL, TRIAL, DEAD, SUMMARY
-  const currentQuestionIndex = gameState.currentQuestionIndex || 0;
+  // GAME PROGRESSION STATE
+  const [currentStep, setCurrentStep] = useState('INTRO'); // INTRO, GRINDING, OVERLAY, REVEAL, TRIAL, DEAD, SUMMARY
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [stats, setStats] = useState({ ...INITIAL_STATS });
+  const clickLockRef = useRef(0);
 
   // PLAYER STATE
   const [playerId, setPlayerId] = useState(null);
@@ -104,6 +106,7 @@ export default function Game() {
       finalStats.arrogance > (finalStats.friendship + finalStats.int) / 2
     ) {
       role = 'HARKONNEN';
+      initialHp = 120 + finalStats.atk;
     } else if (finalStats.friendship >= finalStats.int) {
       role = 'FREMEN';
       initialHp = 150 + finalStats.stamina;
@@ -158,11 +161,15 @@ export default function Game() {
     setHasAnswered(true);
 
     const isFremen = selectedRole === 'FREMEN';
+    const isHarkonnen = selectedRole === 'HARKONNEN';
     let damageTaken = 30 - Math.floor(stats.def / 2);
     if (damageTaken < 10) damageTaken = 10;
     let message = 'Time Up! The Maker strikes!';
 
-    if (isFremen && comrades.some((c) => c.type === 'Desert Scout') && !tankUsed) {
+    if (isHarkonnen) {
+      damageTaken += 15;
+      message = `WRONG! Your own subordinates betray you! Took ${damageTaken} total damage!`;
+    } else if (isFremen && comrades.some((c) => c.type === 'Desert Scout') && !tankUsed) {
       message = "Time Up! The Maker strikes! But your Desert Scout predicted the movement! 0 damage taken.";
       setTankUsed(true);
       syncPlayerToFirebase({ tankUsed: true });
@@ -205,6 +212,7 @@ export default function Game() {
     const isCorrect = selectedIndex === q.correctAnswer;
     const isMentat = selectedRole === 'MENTAT';
     const isFremen = selectedRole === 'FREMEN';
+    const isHarkonnen = selectedRole === 'HARKONNEN';
     let message = '';
     let updatedHp = playerHp;
 
@@ -310,6 +318,7 @@ export default function Game() {
 
         {currentStep === 'GRINDING' && (
           <GrindingScreen
+            key={currentQuestionIndex}
             scenario={GRINDING_SCENARIOS[currentQuestionIndex]}
             currentIndex={currentQuestionIndex}
             totalScenarios={GRINDING_SCENARIOS.length}
@@ -333,6 +342,7 @@ export default function Game() {
 
         {currentStep === 'TRIAL' && (
           <TrialScreen
+            key={currentQuestionIndex}
             question={TRIAL_QUESTIONS[currentQuestionIndex]}
             questionIndex={currentQuestionIndex}
             totalQuestions={TRIAL_QUESTIONS.length}

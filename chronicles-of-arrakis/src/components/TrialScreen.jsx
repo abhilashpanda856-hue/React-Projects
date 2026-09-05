@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Heart, Shield, Target, Swords } from 'lucide-react';
 
 export default function TrialScreen({
@@ -16,11 +16,22 @@ export default function TrialScreen({
   onAnswer,
   isProcessing,
 }) {
+  const [isLocked, setIsLocked] = useState(false);
+
+  const handleOptionClick = (idx) => {
+    if (isProcessing || isLocked) return;
+    setIsLocked(true);
+    onAnswer(idx);
+    setTimeout(() => {
+      setIsLocked(false);
+    }, 1500);
+  };
+
   const hpPercent = maxHp > 0 ? (playerHp / maxHp) * 100 : 0;
   const isFremen = selectedRole === 'FREMEN';
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6 animate-fade-in">
+    <div className="w-full max-w-4xl mx-auto space-y-6 animate-fade-in select-none">
       {/* Top Combat HUD */}
       <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center bg-stone-900/90 p-5 rounded-2xl border border-stone-800 backdrop-blur-md shadow-xl">
         {/* HP Bar */}
@@ -57,6 +68,8 @@ export default function TrialScreen({
             className={`font-mono text-xs font-bold px-2 py-1 rounded inline-block uppercase ${
               isFremen
                 ? 'bg-sky-500/10 text-sky-400 border border-sky-500/30'
+                : selectedRole === 'HARKONNEN'
+                ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
                 : 'bg-purple-500/10 text-purple-400 border border-purple-500/30'
             }`}
           >
@@ -157,9 +170,10 @@ export default function TrialScreen({
             {question.options.map((opt, idx) => (
               <button
                 key={idx}
-                disabled={isProcessing}
-                onClick={() => onAnswer(idx)}
-                className="p-4 sm:p-5 bg-stone-950/70 hover:bg-stone-800 border border-stone-800 hover:border-amber-500/80 rounded-xl text-left text-stone-200 hover:text-white transition-all duration-200 group flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_15px_rgba(245,158,11,0.15)] active:scale-[0.99]"
+                type="button"
+                disabled={isProcessing || isLocked}
+                onClick={() => handleOptionClick(idx)}
+                className="p-4 sm:p-5 bg-stone-950/70 hover:bg-stone-800 border border-stone-800 hover:border-amber-500/80 rounded-xl text-left text-stone-200 hover:text-white transition-all duration-200 group flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_15px_rgba(245,158,11,0.15)] active:scale-[0.99] select-none touch-manipulation"
               >
                 <span className="shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-md bg-stone-900 border border-stone-700 text-amber-500 font-mono font-bold text-xs group-hover:bg-amber-500 group-hover:text-stone-950 transition-colors">
                   {String.fromCharCode(65 + idx)}

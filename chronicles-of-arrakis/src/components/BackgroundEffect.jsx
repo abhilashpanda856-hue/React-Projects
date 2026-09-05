@@ -1,8 +1,8 @@
 import React from 'react';
 
-export default function BackgroundEffect() {
+function BackgroundEffect() {
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
       {/* Deep Desert Ambient Gradients */}
       <div className="absolute inset-0 bg-gradient-to-b from-stone-950 via-[#18120c] to-[#0a0705]" />
       
@@ -24,3 +24,5 @@ export default function BackgroundEffect() {
     </div>
   );
 }
+
+export default React.memo(BackgroundEffect);

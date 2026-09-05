@@ -1,13 +1,47 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Timer, AlertTriangle } from 'lucide-react';
 
-export default function CountdownTimer({ timeLeft, maxTime = 15 }) {
+export default function CountdownTimer({
+  maxTime = 15,
+  onTimeout,
+  isPaused = false,
+}) {
+  const [timeLeft, setTimeLeft] = useState(maxTime);
+  const onTimeoutRef = useRef(onTimeout);
+  const hasTimedOutRef = useRef(false);
+
+  useEffect(() => {
+    onTimeoutRef.current = onTimeout;
+  });
+
+  useEffect(() => {
+    if (isPaused || hasTimedOutRef.current) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          if (!hasTimedOutRef.current) {
+            hasTimedOutRef.current = true;
+            if (onTimeoutRef.current) {
+              onTimeoutRef.current();
+            }
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isPaused]);
+
   const isCritical = timeLeft < 5;
   const progressPercent = Math.max(0, Math.min(100, (timeLeft / maxTime) * 100));
 
   return (
     <div
-      className={`w-full p-3 sm:p-4 rounded-xl border backdrop-blur-md transition-all duration-300 ${
+      className={`w-full p-3 sm:p-4 rounded-xl border backdrop-blur-md transition-all duration-300 select-none will-change-transform ${
         isCritical
           ? 'bg-red-950/40 border-red-500/80 shadow-[0_0_25px_rgba(239,68,68,0.35)] animate-pulse'
           : 'bg-stone-900/80 border-stone-800 shadow-lg'
