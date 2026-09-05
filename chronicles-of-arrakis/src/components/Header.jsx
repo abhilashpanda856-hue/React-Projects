@@ -18,9 +18,7 @@ export default function Header({ currentStep, stats, onReset }) {
       {/* Top Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-800/80 pb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
-            <Compass className="w-5 h-5 animate-pulse" />
-          </div>
+          
           <div>
             <h1 className="font-cinzel text-lg sm:text-xl font-bold tracking-widest text-amber-500 text-glow-amber">
               CHRONICLES OF ARRAKIS

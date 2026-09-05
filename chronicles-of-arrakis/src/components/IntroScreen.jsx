@@ -5,10 +5,7 @@ export default function IntroScreen({ onStart }) {
   return (
     <div className="w-full max-w-3xl mx-auto text-center space-y-8 animate-fade-in">
       {/* Badge */}
-      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono tracking-widest uppercase shadow-[0_0_15px_rgba(245,158,11,0.15)]">
-        <Sparkles className="w-3.5 h-3.5" />
-        <span>Arrakis Initiation Protocol</span>
-      </div>
+      
 
       {/* Main Titles */}
       <div className="space-y-3">
@@ -18,7 +15,7 @@ export default function IntroScreen({ onStart }) {
         <h1 className="text-4xl sm:text-6xl font-black font-cinzel text-white tracking-wider text-glow-amber">
           ORIENTATION TRIAL
         </h1>
-        <div className="w-24 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent mx-auto mt-4" />
+        
       </div>
 
       {/* Narrative Intro */}
