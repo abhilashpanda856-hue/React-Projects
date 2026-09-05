@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Brain, Skull, Sparkles, ChevronRight } from 'lucide-react';
+import { Users, Brain, Skull, ChevronRight } from 'lucide-react';
 
 export default function IntroScreen({ onStart }) {
   return (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   BackgroundEffect,
   Header,
@@ -9,6 +9,7 @@ import {
   TrialScreen,
   GameOverScreen,
   SummaryScreen,
+  CountdownTimer,
 } from './index';
 import {
   INITIAL_STATS,
@@ -21,6 +22,7 @@ export default function Game() {
   const [currentStep, setCurrentStep] = useState('INTRO'); // INTRO, GRINDING, OVERLAY, REVEAL, TRIAL, DEAD, SUMMARY
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [stats, setStats] = useState({ ...INITIAL_STATS });
+  const [timeLeft, setTimeLeft] = useState(15);
 
   // COMBAT STATE
   const [playerHp, setPlayerHp] = useState(100);
@@ -82,8 +84,130 @@ export default function Game() {
     setMaxHp(initialHp);
   };
 
+  // TIMEOUT HANDLER (GRINDING)
+  const handleGrindingTimeout = () => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+
+    const penalty = { stamina: -10 };
+    const nextStats = {
+      ...stats,
+      stamina: stats.stamina - 10,
+    };
+    setStats(nextStats);
+    setRecentStatChanges(penalty);
+    setCombatMessage('Time Up!');
+
+    setTimeout(() => {
+      setCombatMessage('');
+      setIsProcessing(false);
+      if (currentQuestionIndex < GRINDING_SCENARIOS.length - 1) {
+        setCurrentQuestionIndex((prev) => prev + 1);
+      } else {
+        calculateRole(nextStats);
+        setCurrentStep('REVEAL');
+        setCurrentQuestionIndex(0);
+      }
+    }, 2000);
+  };
+
+  // TIMEOUT HANDLER (TRIAL)
+  const handleTrialTimeout = () => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+
+    const isFremen = selectedRole === 'FREMEN';
+    let damageTaken = 30 - Math.floor(stats.def / 2);
+    if (damageTaken < 10) damageTaken = 10;
+    let message = 'Time Up! The Maker strikes!';
+
+    if (isFremen && comrades.some((c) => c.type === 'Desert Scout') && !tankUsed) {
+      message = "Time Up! The Maker strikes! But your Desert Scout predicted the movement! 0 damage taken.";
+      setTankUsed(true);
+      damageTaken = 0;
+    }
+
+    const updatedHp = Math.max(0, playerHp - damageTaken);
+    setPlayerHp(updatedHp);
+    setCombatMessage(message);
+
+    // Support Heal logic after Question 2 (index 1) if Fremen unlocked Sayyadina
+    if (
+      currentQuestionIndex === 1 &&
+      isFremen &&
+      comrades.some((c) => c.type === 'Sayyadina (Healer)') &&
+      !supportUsed
+    ) {
+      setTimeout(() => {
+        setPlayerHp((prev) => Math.min(maxHp, prev + 20));
+        setCombatMessage('The Sayyadina administers the water of life! Recovered 20 HP.');
+        setSupportUsed(true);
+      }, 1500);
+    }
+
+    setTimeout(() => {
+      setCombatMessage('');
+      setIsProcessing(false);
+
+      if (updatedHp <= 0) {
+        setCurrentStep('DEAD');
+      } else if (currentQuestionIndex < TRIAL_QUESTIONS.length - 1) {
+        setCurrentQuestionIndex((prev) => prev + 1);
+      } else {
+        setCurrentStep('SUMMARY');
+      }
+    }, 2500);
+  };
+
+  const handleGrindingTimeoutRef = useRef(handleGrindingTimeout);
+  const handleTrialTimeoutRef = useRef(handleTrialTimeout);
+
+  useEffect(() => {
+    handleGrindingTimeoutRef.current = handleGrindingTimeout;
+    handleTrialTimeoutRef.current = handleTrialTimeout;
+  });
+
+  // 1. Reset timeLeft back to 15 every time currentQuestionIndex changes or when transitioning between phases
+  useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect
+    setTimeLeft(15);
+  }, [currentQuestionIndex, currentStep]);
+
+  // 2. Countdown interval: decrements timeLeft by 1 every second while currentStep is 'GRINDING' or 'TRIAL'
+  useEffect(() => {
+    if ((currentStep !== 'GRINDING' && currentStep !== 'TRIAL') || isProcessing) {
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [currentStep, currentQuestionIndex, isProcessing]);
+
+  // 3. Trigger timeout logic when timeLeft hits 0
+  useEffect(() => {
+    if (timeLeft === 0 && !isProcessing) {
+      if (currentStep === 'GRINDING') {
+        handleGrindingTimeoutRef.current();
+      } else if (currentStep === 'TRIAL') {
+        handleTrialTimeoutRef.current();
+      }
+    }
+  }, [timeLeft, currentStep, isProcessing]);
+
   // CHOICE HANDLER (SCENARIOS)
   const handleGrindingChoice = (choiceStats) => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+
     const nextStats = { ...stats };
     for (const [key, value] of Object.entries(choiceStats)) {
       nextStats[key] = (nextStats[key] || 0) + value;
@@ -94,6 +218,7 @@ export default function Game() {
     setCurrentStep('OVERLAY');
 
     setTimeout(() => {
+      setIsProcessing(false);
       if (currentQuestionIndex < GRINDING_SCENARIOS.length - 1) {
         setCurrentQuestionIndex((prev) => prev + 1);
         setCurrentStep('GRINDING');
@@ -191,6 +316,7 @@ export default function Game() {
   const handleReset = () => {
     setCurrentStep('INTRO');
     setCurrentQuestionIndex(0);
+    setTimeLeft(15);
     setStats({ ...INITIAL_STATS });
     setPlayerHp(100);
     setMaxHp(100);
@@ -219,7 +345,18 @@ export default function Game() {
       </div>
 
       {/* Active Phase Content */}
-      <main className="relative z-10 w-full my-auto flex justify-center items-center py-4">
+      <main className="relative z-10 w-full my-auto flex flex-col justify-center items-center py-4">
+        {/* Visual Countdown Timer for GRINDING and TRIAL phases */}
+        {(currentStep === 'GRINDING' || currentStep === 'TRIAL') && !combatMessage && (
+          <div
+            className={`w-full ${
+              currentStep === 'TRIAL' ? 'max-w-4xl' : 'max-w-3xl'
+            } mx-auto mb-4 animate-fade-in`}
+          >
+            <CountdownTimer timeLeft={timeLeft} />
+          </div>
+        )}
+
         {currentStep === 'INTRO' && (
           <IntroScreen onStart={() => setCurrentStep('GRINDING')} />
         )}
@@ -230,6 +367,8 @@ export default function Game() {
             currentIndex={currentQuestionIndex}
             totalScenarios={GRINDING_SCENARIOS.length}
             onChoiceSelect={handleGrindingChoice}
+            combatMessage={combatMessage}
+            isProcessing={isProcessing}
           />
         )}
 
@@ -261,6 +400,7 @@ export default function Game() {
             supportUsed={supportUsed}
             onAnswer={handleTrialAnswer}
             isProcessing={isProcessing}
+            timeLeft={timeLeft}
           />
         )}
 

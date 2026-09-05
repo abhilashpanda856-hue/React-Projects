@@ -9,3 +9,4 @@ export { default as RoleRevealScreen } from './RoleRevealScreen';
 export { default as TrialScreen } from './TrialScreen';
 export { default as GameOverScreen } from './GameOverScreen';
 export { default as SummaryScreen } from './SummaryScreen';
+export { default as CountdownTimer } from './CountdownTimer';
