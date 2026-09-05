@@ -1,7 +1,7 @@
 import React from 'react';
-import { Skull, RotateCcw } from 'lucide-react';
+import { Skull } from 'lucide-react';
 
-export default function GameOverScreen({ bossDamageDealt, selectedRole, onReset }) {
+function GameOverScreen({ bossDamageDealt, selectedRole }) {
   return (
     <div className="w-full max-w-lg mx-auto text-center space-y-6 p-8 sm:p-10 bg-stone-900/90 border border-rose-800/80 rounded-2xl shadow-[0_0_50px_rgba(225,29,72,0.25)] backdrop-blur-md animate-fade-in">
       <div className="w-20 h-20 mx-auto rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-500 shadow-[0_0_30px_rgba(244,63,94,0.3)] animate-pulse">
@@ -38,3 +38,5 @@ export default function GameOverScreen({ bossDamageDealt, selectedRole, onReset 
     </div>
   );
 }
+
+export default React.memo(GameOverScreen);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Skull, Users, Brain, Shield, Heart, Target, ChevronRight } from 'lucide-react';
+import { Skull, Users, Brain, Shield, Heart, Target } from 'lucide-react';
 
 const COMRADE_ICONS = {
   'Sayyadina (Healer)': <Heart className="w-6 h-6 text-rose-400" />,
@@ -7,39 +7,7 @@ const COMRADE_ICONS = {
   'Desert Scout': <Shield className="w-6 h-6 text-sky-400" />,
 };
 
-export default function RoleRevealScreen({ selectedRole, comrades, onProceedToTrial, onReset }) {
-  // Harkonnen bad ending branch
-  if (selectedRole === 'HARKONNEN') {
-    return (
-      <div className="w-full max-w-2xl mx-auto text-center space-y-8 p-8 sm:p-10 bg-rose-950/40 border border-rose-800/80 rounded-2xl shadow-[0_0_50px_rgba(225,29,72,0.3)] backdrop-blur-md animate-fade-in">
-        <div className="w-20 h-20 mx-auto rounded-full bg-rose-500/10 border border-rose-500/40 flex items-center justify-center text-rose-500 shadow-[0_0_30px_rgba(244,63,94,0.3)] animate-pulse">
-          <Skull className="w-10 h-10" />
-        </div>
-
-        <div className="space-y-2">
-          <p className="text-xs font-mono tracking-[0.3em] uppercase text-rose-400">
-            Desert Judgment Verdict
-          </p>
-          <h2 className="text-4xl sm:text-5xl font-black font-cinzel text-rose-500 text-glow-red">
-            HOUSE HARKONNEN
-          </h2>
-        </div>
-
-        <p className="text-stone-300 italic text-lg leading-relaxed bg-stone-950/60 p-5 rounded-xl border border-rose-900/50">
-          "You stepped on others to climb the ranks. You stole credit and spread lies. But the desert does not respect false kings."
-        </p>
-
-        <p className="text-amber-400/90 font-medium text-sm sm:text-base">
-          A massive Sandworm senses your overwhelming Arrogance. It bursts from the sands and swallows you whole before the trial even begins.
-        </p>
-
-        <div className="pt-4">
-          <p className="text-stone-400 animate-pulse">Waiting for Admin...</p>
-        </div>
-      </div>
-    );
-  }
-
+function RoleRevealScreen({ selectedRole, comrades }) {
   const isFremen = selectedRole === 'FREMEN';
   const isHarkonnen = selectedRole === 'HARKONNEN';
 
@@ -168,3 +136,5 @@ export default function RoleRevealScreen({ selectedRole, comrades, onProceedToTr
     </div>
   );
 }
+
+export default React.memo(RoleRevealScreen);

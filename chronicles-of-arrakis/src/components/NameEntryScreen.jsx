@@ -3,7 +3,7 @@ import { ref, set } from 'firebase/database';
 import { db } from '../firebase';
 import { INITIAL_STATS } from '../data/gameData';
 
-export default function NameEntryScreen({ onJoin }) {
+function NameEntryScreen({ onJoin }) {
   const [name, setName] = useState('');
   const [isJoining, setIsJoining] = useState(false);
 
@@ -54,7 +54,7 @@ export default function NameEntryScreen({ onJoin }) {
         <button
           type="submit"
           disabled={isJoining || !name.trim()}
-          className="w-full py-4 bg-amber-700/80 hover:bg-amber-600/90 text-stone-100 font-bold tracking-widest uppercase rounded border border-amber-500/50 transition-all disabled:opacity-50"
+          className="w-full py-4 bg-amber-700/80 hover:bg-amber-600/90 text-stone-100 font-bold tracking-widest uppercase rounded border border-amber-500/50 transition-all disabled:opacity-50 select-none touch-manipulation active:scale-95 cursor-pointer disabled:cursor-not-allowed"
         >
           {isJoining ? 'Joining...' : 'Join Game'}
         </button>
@@ -62,3 +62,5 @@ export default function NameEntryScreen({ onJoin }) {
     </div>
   );
 }
+
+export default React.memo(NameEntryScreen);

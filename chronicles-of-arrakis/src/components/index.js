@@ -12,3 +12,4 @@ export { default as SummaryScreen } from './SummaryScreen';
 export { default as CountdownTimer } from './CountdownTimer';
 export { default as NameEntryScreen } from './NameEntryScreen';
 export { default as LeaderboardScreen } from './LeaderboardScreen';
+export { default as Footer } from './Footer';

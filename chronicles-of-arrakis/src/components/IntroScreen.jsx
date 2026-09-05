@@ -1,7 +1,7 @@
 import React from 'react';
-import { Users, Brain, Skull, ChevronRight } from 'lucide-react';
+import { Users, Brain, Skull } from 'lucide-react';
 
-export default function IntroScreen({ onStart }) {
+function IntroScreen() {
   return (
     <div className="w-full max-w-3xl mx-auto text-center space-y-8 animate-fade-in">
       {/* Badge */}
@@ -63,3 +63,5 @@ export default function IntroScreen({ onStart }) {
     </div>
   );
 }
+
+export default React.memo(IntroScreen);

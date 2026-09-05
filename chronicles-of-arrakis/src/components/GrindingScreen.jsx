@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
-export default function GrindingScreen({
+function GrindingScreen({
   scenario,
   currentIndex,
   totalScenarios,
@@ -23,7 +23,7 @@ export default function GrindingScreen({
   return (
     <div className="w-full max-w-3xl mx-auto space-y-6 animate-fade-in select-none">
       {combatMessage ? (
-        <div className="text-center p-10 sm:p-14 rounded-2xl border-2 border-red-600 bg-red-950/60 shadow-[0_0_40px_rgba(220,38,38,0.4)] backdrop-blur-md animate-shake">
+        <div className="text-center p-10 sm:p-14 rounded-2xl border-2 border-red-600 bg-red-950/60 shadow-[0_0_40px_rgba(220,38,38,0.4)] backdrop-blur-md animate-shake will-change-transform transform">
           <div className="inline-flex items-center justify-center p-3 rounded-full bg-stone-950/80 mb-4 text-red-500">
             <AlertTriangle className="w-8 h-8 animate-pulse" />
           </div>
@@ -90,3 +90,4 @@ export default function GrindingScreen({
   );
 }
 
+export default React.memo(GrindingScreen);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { usePlayers } from '../hooks/usePlayers';
 
-export default function LeaderboardScreen({ phase }) {
+function LeaderboardScreen({ phase }) {
   const players = usePlayers();
   
   const playersList = Object.values(players || {});
@@ -87,3 +87,5 @@ export default function LeaderboardScreen({ phase }) {
     </div>
   );
 }
+
+export default React.memo(LeaderboardScreen);

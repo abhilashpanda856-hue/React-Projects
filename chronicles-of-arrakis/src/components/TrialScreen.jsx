@@ -1,7 +1,37 @@
 import React, { useState } from 'react';
 import { Heart, Shield, Target, Swords } from 'lucide-react';
 
-export default function TrialScreen({
+const PlayerHpBar = React.memo(function PlayerHpBar({ playerHp, maxHp }) {
+  const hpPercent = maxHp > 0 ? (playerHp / maxHp) * 100 : 0;
+
+  return (
+    <div className="sm:col-span-6 space-y-2 select-none">
+      <div className="flex justify-between items-center text-xs font-mono">
+        <span className="font-bold uppercase tracking-wider text-stone-300 flex items-center gap-1.5">
+          <Heart className="w-4 h-4 text-rose-500" />
+          Player HP
+        </span>
+        <span className="text-stone-400 font-bold">
+          {playerHp} <span className="text-stone-600">/</span> {maxHp}
+        </span>
+      </div>
+      <div className="h-4 bg-stone-950 rounded-full overflow-hidden border border-stone-800 p-0.5 shadow-inner">
+        <div
+          className={`h-full rounded-full transition-all duration-500 will-change-transform ${
+            hpPercent > 50
+              ? 'bg-gradient-to-r from-emerald-600 to-emerald-400'
+              : hpPercent > 25
+              ? 'bg-gradient-to-r from-amber-600 to-amber-400'
+              : 'bg-gradient-to-r from-rose-700 to-rose-500 animate-pulse'
+          }`}
+          style={{ width: `${Math.max(0, Math.min(100, hpPercent))}%` }}
+        />
+      </div>
+    </div>
+  );
+});
+
+function TrialScreen({
   question,
   questionIndex,
   totalQuestions,
@@ -27,37 +57,14 @@ export default function TrialScreen({
     }, 1500);
   };
 
-  const hpPercent = maxHp > 0 ? (playerHp / maxHp) * 100 : 0;
   const isFremen = selectedRole === 'FREMEN';
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6 animate-fade-in select-none">
       {/* Top Combat HUD */}
       <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center bg-stone-900/90 p-5 rounded-2xl border border-stone-800 backdrop-blur-md shadow-xl">
-        {/* HP Bar */}
-        <div className="sm:col-span-6 space-y-2">
-          <div className="flex justify-between items-center text-xs font-mono">
-            <span className="font-bold uppercase tracking-wider text-stone-300 flex items-center gap-1.5">
-              <Heart className="w-4 h-4 text-rose-500" />
-              Player HP
-            </span>
-            <span className="text-stone-400 font-bold">
-              {playerHp} <span className="text-stone-600">/</span> {maxHp}
-            </span>
-          </div>
-          <div className="h-4 bg-stone-950 rounded-full overflow-hidden border border-stone-800 p-0.5">
-            <div
-              className={`h-full rounded-full transition-all duration-500 ${
-                hpPercent > 50
-                  ? 'bg-gradient-to-r from-emerald-600 to-emerald-400'
-                  : hpPercent > 25
-                  ? 'bg-gradient-to-r from-amber-600 to-amber-400'
-                  : 'bg-gradient-to-r from-rose-700 to-rose-500 animate-pulse'
-              }`}
-              style={{ width: `${Math.max(0, Math.min(100, hpPercent))}%` }}
-            />
-          </div>
-        </div>
+        {/* Memoized HP Bar */}
+        <PlayerHpBar playerHp={playerHp} maxHp={maxHp} />
 
         {/* Role & Comrades status */}
         <div className="sm:col-span-3 text-center sm:border-x border-stone-800 sm:px-2 py-1">
@@ -116,7 +123,7 @@ export default function TrialScreen({
       {/* Main Trial Arena: Combat Message or Question */}
       {combatMessage ? (
         <div
-          className={`text-center p-10 sm:p-14 rounded-2xl border backdrop-blur-md transition-all duration-300 ${
+          className={`text-center p-10 sm:p-14 rounded-2xl border backdrop-blur-md will-change-transform transform transition-all duration-300 ${
             combatMessage.includes('Desert Scout')
               ? 'bg-sky-950/40 border-sky-500 shadow-[0_0_40px_rgba(56,189,248,0.3)] animate-pulse'
               : combatMessage.includes('WRONG') || combatMessage.includes('Time Up') || combatMessage.includes('Maker strikes')
@@ -187,3 +194,5 @@ export default function TrialScreen({
     </div>
   );
 }
+
+export default React.memo(TrialScreen);

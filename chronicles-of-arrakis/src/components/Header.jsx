@@ -1,5 +1,4 @@
 import React from 'react';
-import { RotateCcw } from 'lucide-react';
 import StatPanel from './StatPanel';
 
 const STEP_LABELS = {
@@ -12,7 +11,7 @@ const STEP_LABELS = {
   SUMMARY: 'TRIAL CONCLUDED',
 };
 
-function Header({ currentStep, stats, onReset }) {
+function Header({ currentStep, stats }) {
   return (
     <header className="w-full max-w-5xl mx-auto mb-6 sm:mb-8 space-y-4 select-none">
       {/* Top Bar */}

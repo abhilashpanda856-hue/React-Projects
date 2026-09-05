@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Timer, AlertTriangle } from 'lucide-react';
 
-export default function CountdownTimer({
+function CountdownTimer({
   maxTime = 15,
   onTimeout,
   isPaused = false,
@@ -37,11 +37,11 @@ export default function CountdownTimer({
   }, [isPaused]);
 
   const isCritical = timeLeft < 5;
-  const progressPercent = Math.max(0, Math.min(100, (timeLeft / maxTime) * 100));
+  const progressRatio = Math.max(0, Math.min(1, timeLeft / maxTime));
 
   return (
     <div
-      className={`w-full p-3 sm:p-4 rounded-xl border backdrop-blur-md transition-all duration-300 select-none will-change-transform ${
+      className={`w-full p-3 sm:p-4 rounded-xl border backdrop-blur-md transition-all duration-300 select-none ${
         isCritical
           ? 'bg-red-950/40 border-red-500/80 shadow-[0_0_25px_rgba(239,68,68,0.35)] animate-pulse'
           : 'bg-stone-900/80 border-stone-800 shadow-lg'
@@ -86,14 +86,16 @@ export default function CountdownTimer({
       {/* Sci-Fi Progress Bar Track */}
       <div className="h-2 sm:h-2.5 w-full bg-stone-950/90 rounded-full overflow-hidden border border-stone-800 p-0.5 shadow-inner">
         <div
-          className={`h-full rounded-full transition-all duration-1000 ease-linear ${
+          className={`h-full w-full rounded-full origin-left will-change-transform transform transition-transform duration-1000 ease-linear ${
             isCritical
               ? 'bg-gradient-to-r from-red-600 via-red-500 to-red-600 shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-pulse'
               : 'bg-gradient-to-r from-amber-600 via-amber-500 to-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.5)]'
           }`}
-          style={{ width: `${progressPercent}%` }}
+          style={{ transform: `scaleX(${progressRatio})` }}
         />
       </div>
     </div>
   );
 }
+
+export default React.memo(CountdownTimer);

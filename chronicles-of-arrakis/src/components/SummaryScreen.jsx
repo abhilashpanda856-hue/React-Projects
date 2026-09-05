@@ -1,7 +1,7 @@
 import React from 'react';
-import { Trophy, Flame, RotateCcw, Heart, Shield, Target } from 'lucide-react';
+import { Trophy, Flame, Heart, Shield, Target } from 'lucide-react';
 
-export default function SummaryScreen({ bossDamageDealt, selectedRole, comrades = [], onReset }) {
+function SummaryScreen({ bossDamageDealt, selectedRole, comrades = [] }) {
   let rank = 'Initiate';
   let rankColor = 'text-stone-400';
   let badgeColor = 'border-stone-700 bg-stone-900/60';
@@ -94,3 +94,5 @@ export default function SummaryScreen({ bossDamageDealt, selectedRole, comrades 
     </div>
   );
 }
+
+export default React.memo(SummaryScreen);
