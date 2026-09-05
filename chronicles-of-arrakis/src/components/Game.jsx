@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import {
   BackgroundEffect,
   Header,
@@ -10,6 +10,7 @@ import {
   GameOverScreen,
   SummaryScreen,
   CountdownTimer,
+  Footer,
 } from './index';
 import {
   INITIAL_STATS,
@@ -22,7 +23,7 @@ export default function Game() {
   const [currentStep, setCurrentStep] = useState('INTRO'); // INTRO, GRINDING, OVERLAY, REVEAL, TRIAL, DEAD, SUMMARY
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [stats, setStats] = useState({ ...INITIAL_STATS });
-  const [timeLeft, setTimeLeft] = useState(15);
+  const clickLockRef = useRef(0);
 
   // COMBAT STATE
   const [playerHp, setPlayerHp] = useState(100);
@@ -51,6 +52,7 @@ export default function Game() {
       finalStats.arrogance > (finalStats.friendship + finalStats.int) / 2
     ) {
       role = 'HARKONNEN';
+      initialHp = 120 + finalStats.atk;
     } else if (finalStats.friendship >= finalStats.int) {
       role = 'FREMEN';
       initialHp = 150 + finalStats.stamina;
@@ -117,11 +119,15 @@ export default function Game() {
     setIsProcessing(true);
 
     const isFremen = selectedRole === 'FREMEN';
+    const isHarkonnen = selectedRole === 'HARKONNEN';
     let damageTaken = 30 - Math.floor(stats.def / 2);
     if (damageTaken < 10) damageTaken = 10;
     let message = 'Time Up! The Maker strikes!';
 
-    if (isFremen && comrades.some((c) => c.type === 'Desert Scout') && !tankUsed) {
+    if (isHarkonnen) {
+      damageTaken += 15;
+      message = `WRONG! Your own subordinates betray you! Took ${damageTaken} total damage!`;
+    } else if (isFremen && comrades.some((c) => c.type === 'Desert Scout') && !tankUsed) {
       message = "Time Up! The Maker strikes! But your Desert Scout predicted the movement! 0 damage taken.";
       setTankUsed(true);
       damageTaken = 0;
@@ -159,53 +165,11 @@ export default function Game() {
     }, 2500);
   };
 
-  const handleGrindingTimeoutRef = useRef(handleGrindingTimeout);
-  const handleTrialTimeoutRef = useRef(handleTrialTimeout);
-
-  useEffect(() => {
-    handleGrindingTimeoutRef.current = handleGrindingTimeout;
-    handleTrialTimeoutRef.current = handleTrialTimeout;
-  });
-
-  // 1. Reset timeLeft back to 15 every time currentQuestionIndex changes or when transitioning between phases
-  useEffect(() => {
-    // eslint-disable-next-line react/set-state-in-effect
-    setTimeLeft(15);
-  }, [currentQuestionIndex, currentStep]);
-
-  // 2. Countdown interval: decrements timeLeft by 1 every second while currentStep is 'GRINDING' or 'TRIAL'
-  useEffect(() => {
-    if ((currentStep !== 'GRINDING' && currentStep !== 'TRIAL') || isProcessing) {
-      return;
-    }
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [currentStep, currentQuestionIndex, isProcessing]);
-
-  // 3. Trigger timeout logic when timeLeft hits 0
-  useEffect(() => {
-    if (timeLeft === 0 && !isProcessing) {
-      if (currentStep === 'GRINDING') {
-        handleGrindingTimeoutRef.current();
-      } else if (currentStep === 'TRIAL') {
-        handleTrialTimeoutRef.current();
-      }
-    }
-  }, [timeLeft, currentStep, isProcessing]);
-
   // CHOICE HANDLER (SCENARIOS)
   const handleGrindingChoice = (choiceStats) => {
-    if (isProcessing) return;
+    const now = Date.now();
+    if (isProcessing || now - clickLockRef.current < 1500) return;
+    clickLockRef.current = now;
     setIsProcessing(true);
 
     const nextStats = { ...stats };
@@ -232,20 +196,26 @@ export default function Game() {
 
   // TRIAL QUESTION HANDLER (BOSS BATTLE)
   const handleTrialAnswer = (selectedIndex) => {
-    if (isProcessing) return;
+    const now = Date.now();
+    if (isProcessing || now - clickLockRef.current < 1500) return;
+    clickLockRef.current = now;
     setIsProcessing(true);
 
     const q = TRIAL_QUESTIONS[currentQuestionIndex];
     const isCorrect = selectedIndex === q.correctAnswer;
     const isMentat = selectedRole === 'MENTAT';
     const isFremen = selectedRole === 'FREMEN';
+    const isHarkonnen = selectedRole === 'HARKONNEN';
     let message = '';
     let updatedHp = playerHp;
 
     if (isCorrect) {
       let damage = stats.atk + stats.int;
 
-      if (isMentat) {
+      if (isHarkonnen) {
+        damage = stats.atk + stats.arrogance;
+        message = `Brute force strike! Dealt ${damage} damage!`;
+      } else if (isMentat) {
         damage = Math.floor(damage * 2.5);
         message = `CRITICAL STRIKE! Mentat calculation perfect. Dealt ${damage} damage!`;
       } else if (isFremen) {
@@ -266,7 +236,10 @@ export default function Game() {
       let damageTaken = 30 - Math.floor(stats.def / 2);
       if (damageTaken < 10) damageTaken = 10;
 
-      if (isFremen && comrades.some((c) => c.type === 'Desert Scout') && !tankUsed) {
+      if (isHarkonnen) {
+        damageTaken += 15;
+        message = `WRONG! Your own subordinates betray you! Took ${damageTaken} total damage!`;
+      } else if (isFremen && comrades.some((c) => c.type === 'Desert Scout') && !tankUsed) {
         message = "WRONG! But your Desert Scout predicted the Maker's movement! 0 damage taken.";
         setTankUsed(true);
         damageTaken = 0;
@@ -313,10 +286,9 @@ export default function Game() {
   };
 
   // RESTART SIMULATION
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setCurrentStep('INTRO');
     setCurrentQuestionIndex(0);
-    setTimeLeft(15);
     setStats({ ...INITIAL_STATS });
     setPlayerHp(100);
     setMaxHp(100);
@@ -328,7 +300,7 @@ export default function Game() {
     setTankUsed(false);
     setSupportUsed(false);
     setIsProcessing(false);
-  };
+  }, []);
 
   return (
     <div className="relative min-h-screen w-full flex flex-col justify-between p-4 sm:p-6 lg:p-8 overflow-x-hidden text-slate-100">
@@ -346,14 +318,19 @@ export default function Game() {
 
       {/* Active Phase Content */}
       <main className="relative z-10 w-full my-auto flex flex-col justify-center items-center py-4">
-        {/* Visual Countdown Timer for GRINDING and TRIAL phases */}
+        {/* Visual Countdown Timer for GRINDING and TRIAL phases - only timer UI re-renders on ticks */}
         {(currentStep === 'GRINDING' || currentStep === 'TRIAL') && !combatMessage && (
           <div
             className={`w-full ${
               currentStep === 'TRIAL' ? 'max-w-4xl' : 'max-w-3xl'
             } mx-auto mb-4 animate-fade-in`}
           >
-            <CountdownTimer timeLeft={timeLeft} />
+            <CountdownTimer
+              key={`${currentStep}-${currentQuestionIndex}`}
+              maxTime={15}
+              isPaused={isProcessing || Boolean(combatMessage)}
+              onTimeout={currentStep === 'GRINDING' ? handleGrindingTimeout : handleTrialTimeout}
+            />
           </div>
         )}
 
@@ -363,6 +340,7 @@ export default function Game() {
 
         {currentStep === 'GRINDING' && (
           <GrindingScreen
+            key={currentQuestionIndex}
             scenario={GRINDING_SCENARIOS[currentQuestionIndex]}
             currentIndex={currentQuestionIndex}
             totalScenarios={GRINDING_SCENARIOS.length}
@@ -387,6 +365,7 @@ export default function Game() {
 
         {currentStep === 'TRIAL' && (
           <TrialScreen
+            key={currentQuestionIndex}
             question={TRIAL_QUESTIONS[currentQuestionIndex]}
             questionIndex={currentQuestionIndex}
             totalQuestions={TRIAL_QUESTIONS.length}
@@ -400,7 +379,6 @@ export default function Game() {
             supportUsed={supportUsed}
             onAnswer={handleTrialAnswer}
             isProcessing={isProcessing}
-            timeLeft={timeLeft}
           />
         )}
 
@@ -423,10 +401,7 @@ export default function Game() {
       </main>
 
       {/* Dune Terminal Footer */}
-      <footer className="relative z-10 w-full max-w-5xl mx-auto pt-6 text-center text-[11px] font-mono text-stone-600 border-t border-stone-800/60 flex flex-wrap justify-between items-center gap-2">
-        <span>Arrakis Planetary Protocol • Imperial Year 10191</span>
-        <span>"Fear is the mind-killer."</span>
-      </footer>
+      <Footer />
     </div>
   );
 }

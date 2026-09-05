@@ -12,122 +12,74 @@ export const INITIAL_STATS = {
 export const GRINDING_SCENARIOS = [
   {
     id: 1,
-    title: "The 11:59 PM PDF Drop",
-    description: "A senior drops a massive, unexplained 40-page PDF into the official group chat and simply says, 'Read this for tomorrow.'",
+    title: "The Samosa Gambit",
+    description: "You are at the university canteen. There is exactly one fresh samosa left. You and a formidable senior reach for it at the exact same time.",
     choices: [
-      { text: "Organize a quick Google Meet with Section O to divide and conquer the reading.", stats: { friendship: 15, stamina: 5, def: 5 } },
-      { text: "Ignore the chat, read the entire PDF alone at 2x speed, and refuse to elaborate.", stats: { int: 20, stamina: -10, atk: 5 } },
-      { text: "Reply 'Thanks Bhaiya!' immediately to look good, then go to sleep without opening it.", stats: { arrogance: 20, int: -10 } },
-      { text: "Feed the PDF to an AI summarizer and trade the summary to classmates for canteen snacks.", stats: { int: 10, arrogance: 10, friendship: 5 } },
-      { text: "Reply with a highly inappropriate meme by accident, delete it, and stress about it all night.", stats: { stamina: -15, friendship: 10 } }
+      { text: "Challenge them to a 1-minute blitz chess match to determine the true owner.", stats: { int: 15, atk: 15, friendship: 5 } },
+      { text: "Surrender it immediately, call them 'Bhaiya', and secure a powerful future ally.", stats: { friendship: 25, def: 10 } },
+      { text: "Snatch it instantly and use a secret escape route back to Section O.", stats: { arrogance: 25, stamina: -10 } },
+      { text: "Propose splitting it in half to maintain perfect universal equilibrium.", stats: { friendship: 15, int: 15 } },
+      { text: "Stare at it intensely without breaking eye contact until they get uncomfortable and walk away.", stats: { stamina: 20, arrogance: 10 } }
     ]
   },
   {
     id: 2,
-    title: "The Basic Electronics Nightmare",
-    description: "Your Basic Electronics lab circuit is dead. The breadboard looks like a spaghetti monster, and the professor is walking over.",
+    title: "The Basic Electronics Meltdown",
+    description: "Your Basic Electronics lab breadboard looks like a spaghetti monster. Suddenly, your LED starts smoking, and the strict professor is walking over.",
     choices: [
-      { text: "Unplug everything, take a deep breath, do a quick micro-meditation, and start over.", stats: { stamina: 20, int: 5 } },
-      { text: "Calmly trace the logic gates from scratch to find the exact loose jumper wire.", stats: { int: 20, atk: 15 } },
-      { text: "Panic and quickly swap your breadboard with the neighboring bench when they aren't looking.", stats: { arrogance: 25, friendship: -20 } },
-      { text: "Ask your lab partner to double-check the connections while you verify the datasheet.", stats: { friendship: 15, def: 10 } },
-      { text: "Confidently tell the professor the LED is actually emitting 'invisible infrared light'.", stats: { arrogance: 15, int: -5 } }
+      { text: "Unplug everything, take a deep breath, and calmly trace the logic gates from scratch.", stats: { int: 25, stamina: 10 } },
+      { text: "Confidently tell the professor it's a feature, and the LED is emitting 'invisible infrared light.'", stats: { arrogance: 25, int: -10 } },
+      { text: "Ask your lab partner for a quick swap while distracting the professor with a theoretical question.", stats: { friendship: 20, atk: 10 } },
+      { text: "Accept defeat, write down the error in your observation record, and ask for a new LED.", stats: { def: 20, stamina: 10 } },
+      { text: "Blame the university's faulty jumper wires loud enough for the whole lab to hear.", stats: { arrogance: 20, friendship: -15 } }
     ]
   },
   {
     id: 3,
-    title: "The Hardware Struggle",
-    description: "You need to run a heavy machine learning simulator, but your laptop has an Intel i3 processor and sounds like a jet engine taking off.",
+    title: "The Hardware Bottleneck",
+    description: "You are trying to compile a massive AIML project, but your laptop has an Intel i3 processor and sounds like a jet engine preparing for takeoff.",
     choices: [
-      { text: "Complain loudly that the university should provide better hardware for AIML students.", stats: { arrogance: 20, def: -5 } },
-      { text: "Form a study group with someone who has a gaming laptop and bring them snacks as tribute.", stats: { friendship: 20, stamina: 5 } },
-      { text: "Optimize your code to run with absolute minimal resources. Software > Hardware.", stats: { int: 25, atk: 15 } },
-      { text: "Try to overclock the i3 processor anyway. If the laptop dies, it dies with honor.", stats: { int: 10, arrogance: 10, stamina: -15 } },
-      { text: "Shut it down, put on some devotional music, and write the algorithm out on paper instead.", stats: { stamina: 15, int: 10 } }
+      { text: "Write the macro-level architecture out on paper and let your brain compile it instead.", stats: { int: 25, def: 10 } },
+      { text: "Borrow a gaming laptop from a friend, offering them a week of free canteen snacks as tribute.", stats: { friendship: 25, stamina: -5 } },
+      { text: "Attempt to aggressively overclock the i3. If the motherboard dies, it dies fighting.", stats: { atk: 20, arrogance: 15, stamina: -20 } },
+      { text: "Put on some devotional music, close your eyes, and just wait the 6 hours for it to run.", stats: { stamina: 25, int: 5 } },
+      { text: "Post a complaint on LinkedIn about how true software engineers don't need good hardware.", stats: { arrogance: 20, int: -5 } }
     ]
   },
   {
     id: 4,
-    title: "The Midnight Push",
-    description: "It’s 2 AM before a minor exam. Your squad sends an emergency invite: they need you for one last Clash Lane push to reach the next rank.",
+    title: "The Clash Lane Ultimatum",
+    description: "It’s 2 AM. Your Mathematics-II exam is tomorrow. Your squad sends an emergency invite: they desperately need a Fighter for one last rank-up push.",
     choices: [
-      { text: "Decline. The only ranking you care about right now is your CGPA.", stats: { int: 20, stamina: 10 } },
-      { text: "Lock in as a Fighter, carry the team to victory, then study with zero sleep.", stats: { friendship: 15, atk: 15, stamina: -20 } },
-      { text: "Tell them you'll play, but only if everyone quizzes each other on math formulas over voice chat.", stats: { friendship: 15, int: 15 } },
-      { text: "Accept, intentionally pick a terrible hero, throw the game quickly, and go back to studying.", stats: { arrogance: 20, friendship: -15 } },
-      { text: "Go to sleep. A true tactician knows that resting is better than tilting in a MOBA.", stats: { stamina: 25, def: 10 } }
+      { text: "Lock in your Fighter, carry the team to victory, and then pull a sleepless all-nighter studying.", stats: { friendship: 20, atk: 15, stamina: -25 } },
+      { text: "Decline the invite. The only boss fight you are preparing for tonight is Taylor Series formulas.", stats: { int: 25, def: 15 } },
+      { text: "Accept, pick a fragile Mage for the Clash Lane, refuse to elaborate, and throw the game.", stats: { arrogance: 25, friendship: -20 } },
+      { text: "Agree to play, but only if the voice chat is strictly used to quiz each other on calculus.", stats: { friendship: 15, int: 20 } },
+      { text: "Go straight to sleep. A fully rested tactician is deadlier than a sleep-deprived genius.", stats: { stamina: 30, def: 10 } }
     ]
   },
   {
     id: 5,
-    title: "The Hackathon Pitch",
-    description: "Your team is pitching an app at a technical event. The judges ask a brutal question about a massive bug they found in your code.",
+    title: "The Solo Leveling Pitch",
+    description: "At a hackathon, your teammate confidently pitches an app idea that is literally just a basic calculator. The judges are staring at you.",
     choices: [
-      { text: "Analyze the bug on the spot and whiteboard a patch in front of them.", stats: { int: 25, atk: 20 } },
-      { text: "Interrupt the judge, aggressively explaining why it’s actually a 'feature,' not a bug.", stats: { arrogance: 25, int: -10 } },
-      { text: "Step forward and smoothly take the blame, protecting your junior teammates.", stats: { friendship: 25, def: 15 } },
-      { text: "Let your teammate answer, but use hand signals from behind the judges to guide them.", stats: { friendship: 15, int: 10, stamina: -5 } },
-      { text: "Subtly point out that the other team's project didn't even compile.", stats: { arrogance: 15, friendship: -10 } }
+      { text: "Take the mic, pivot the pitch entirely, and claim it uses 'AI-driven mathematical prediction.'", stats: { int: 20, atk: 15 } },
+      { text: "Support your teammate, but use Tailwind CSS to make the calculator look like a dark-mode sci-fi HUD.", stats: { friendship: 20, def: 15 } },
+      { text: "Openly laugh at the idea in front of the mentors to save your own reputation.", stats: { arrogance: 30, friendship: -25 } },
+      { text: "Stay completely silent, stand in the back, and look incredibly mysterious.", stats: { stamina: 15, arrogance: 10 } },
+      { text: "Admit it's simple, but showcase the flawless, bug-free component architecture behind it.", stats: { def: 20, int: 15 } }
     ]
   },
   {
     id: 6,
-    title: "The Library Showdown",
-    description: "The library only has one copy of the recommended textbook left. You and another student reach for it at the exact same time.",
+    title: "The Section O Synergy",
+    description: "A surprise extra class is scheduled for Sunday morning, but you already organized a massive Honor of Kings tournament in the hostel.",
     choices: [
-      { text: "Snatch it out of their hand, stating your curriculum is obviously more important.", stats: { arrogance: 25, friendship: -15 } },
-      { text: "Suggest scanning the important chapters together so you both get the material.", stats: { friendship: 20, stamina: 5 } },
-      { text: "Challenge them to a quick 3-minute blitz chess match on your phone. Winner takes the book.", stats: { int: 15, atk: 10, friendship: 5 } },
-      { text: "Let them have it. You already memorized the syllabus from YouTube tutorials anyway.", stats: { int: 20, def: 10 } },
-      { text: "Agree to study together, but secretly plan to just listen to EDM and let them do the reading.", stats: { arrogance: 15, stamina: 10 } }
-    ]
-  },
-  {
-    id: 7,
-    title: "The Proxy Dilemma",
-    description: "You woke up late. You need someone to give your attendance proxy in a strict professor's class.",
-    choices: [
-      { text: "Message the quiet kid who always sits in the front row and promise them a favor.", stats: { int: 10, friendship: 10 } },
-      { text: "Accept your fate, skip the class, and use the time to build a personal web project instead.", stats: { int: 20, atk: 10, stamina: 5 } },
-      { text: "Demand that your roommate does it, even though their voice sounds completely different.", stats: { arrogance: 20, int: -5 } },
-      { text: "Rush to class anyway, sprint through the corridors, and sneak in through the back door.", stats: { stamina: -10, def: 15 } },
-      { text: "Coordinate a massive distraction with 5 friends so you can all slip in unnoticed.", stats: { friendship: 25, atk: 5 } }
-    ]
-  },
-  {
-    id: 8,
-    title: "The Unbalanced Group Project",
-    description: "It's the final week of a group project. Two members have contributed absolutely nothing to the codebase.",
-    choices: [
-      { text: "Host a chill coding session with pizza to motivate them to write at least some documentation.", stats: { friendship: 20, stamina: -5 } },
-      { text: "Delete their names from the final slide deck right before the presentation.", stats: { arrogance: 25, friendship: -20 } },
-      { text: "Isolate yourself, rewrite the entire architecture overnight, and carry the team.", stats: { int: 25, atk: 20, stamina: -20 } },
-      { text: "Assign them non-coding tasks like designing the UI or making the presentation look pretty.", stats: { int: 15, friendship: 10 } },
-      { text: "Do nothing. Let the project fail to teach them a lesson about the real world.", stats: { arrogance: 15, int: -15 } }
-    ]
-  },
-  {
-    id: 9,
-    title: "The Society Recruitment",
-    description: "You are attending an orientation for a major technical society (like IEEE!). A senior asks why you want to join.",
-    choices: [
-      { text: "To meet brilliant seniors, collaborate on open-source, and grow together.", stats: { friendship: 25, def: 10 } },
-      { text: "To gain access to the technical resources so I can build my solo startup faster.", stats: { int: 20, atk: 10 } },
-      { text: "Because I'm already better at coding than half the current members.", stats: { arrogance: 30, friendship: -15 } },
-      { text: "Honestly? I heard you guys have the best post-event food.", stats: { stamina: 15, friendship: 10 } },
-      { text: "To network, optimize my resume, and understand the macro-level architecture of tech events.", stats: { int: 15, def: 15 } }
-    ]
-  },
-  {
-    id: 10,
-    title: "The End-Semester Exam",
-    description: "You flip over the question paper. Question 1 is completely out of syllabus and worth 20 marks.",
-    choices: [
-      { text: "Write an extremely aggressive note to the examiner on the first page.", stats: { arrogance: 25, int: -10 } },
-      { text: "Derive the closest possible formula from first principles and attempt a partial solution.", stats: { int: 25, atk: 15 } },
-      { text: "Make eye contact with your friends across the hall and share a collective look of despair.", stats: { friendship: 15, stamina: 5 } },
-      { text: "Skip it immediately. Perfectly optimize your time for the remaining 80 marks.", stats: { int: 20, def: 20 } },
-      { text: "Write out the lyrics to an anime opening theme and hope they give you pity marks.", stats: { arrogance: 10, stamina: -5, friendship: 5 } }
+      { text: "Cancel the tournament and sit in the front row of the class to take perfect notes.", stats: { int: 20, def: 10, stamina: -5 } },
+      { text: "Sneak your phone into class and lock in as a Clash Lane Fighter under the desk.", stats: { atk: 15, arrogance: 20, stamina: -15 } },
+      { text: "Convince the entire section to collectively skip so the professor has to cancel it.", stats: { friendship: 30, arrogance: 15 } },
+      { text: "Skip class, win the tournament, and barter your prize pool for someone else's notes later.", stats: { int: 15, atk: 10, friendship: 10 } },
+      { text: "Play a Mage, cast your ultimate, and 'accidentally' disconnect the hostel router to delay the tournament.", stats: { arrogance: 25, int: 10, friendship: -20 } }
     ]
   }
 ];
@@ -138,9 +90,9 @@ export const TRIAL_QUESTIONS = [
     flavor: "Shai-Hulud roars, demanding to know the true name of the ancient order!",
     question: "What does the acronym IEEE actually stand for?",
     options: [
-      "Institute of Electrical and Electronics Engineers",
-      "Institution of Extremely Exhausted Engineers",
-      "Infinite Engineering Educational Exams",
+      "Institute of Electrical and Electronics Engineers", 
+      "Institution of Extremely Exhausted Engineers", 
+      "Infinite Engineering Educational Exams", 
       "Intergalactic Electrical Empire"
     ],
     correctAnswer: 0
@@ -150,9 +102,9 @@ export const TRIAL_QUESTIONS = [
     flavor: "The Maker spits a blast of wireless static at your vanguard!",
     question: "Which famous IEEE standard is the reason you can seamlessly scroll reels in the hostel instead of studying?",
     options: [
-      "IEEE 404 (Not Found)",
-      "IEEE 3.1415",
-      "IEEE 802.11 (Wi-Fi)",
+      "IEEE 404 (Not Found)", 
+      "IEEE 3.1415", 
+      "IEEE 802.11 (Wi-Fi)", 
       "IEEE 8080"
     ],
     correctAnswer: 2
@@ -162,9 +114,9 @@ export const TRIAL_QUESTIONS = [
     flavor: "The desert sands shift, revealing ancient historical rivalries!",
     question: "IEEE was formed in 1963 by merging two massive groups. Whose legendary rivalry represents the roots of these electrical foundations?",
     options: [
-      "Batman vs The Joker",
-      "Thomas Edison (DC) vs Nikola Tesla (AC)",
-      "React vs Angular",
+      "Batman vs The Joker", 
+      "Thomas Edison (DC) vs Nikola Tesla (AC)", 
+      "React vs Angular", 
       "Sung Jinwoo vs The Architect"
     ],
     correctAnswer: 1
@@ -174,9 +126,9 @@ export const TRIAL_QUESTIONS = [
     flavor: "The Boss forces your brain to calculate floating-point decimals under immense pressure!",
     question: "Which IEEE standard dictates how computers process floating-point math (and is the reason why 0.1 + 0.2 = 0.30000000000000004 in JavaScript)?",
     options: [
-      "IEEE 999",
-      "IEEE 420",
-      "IEEE 754",
+      "IEEE 999", 
+      "IEEE 420", 
+      "IEEE 754", 
       "IEEE 0.0001"
     ],
     correctAnswer: 2
@@ -186,9 +138,9 @@ export const TRIAL_QUESTIONS = [
     flavor: "A fiery tremor erupts beneath your feet, threatening your hardware!",
     question: "IEEE 1394 is a high-speed data transfer standard, but Apple gave it a much cooler, cinematic name. What is it?",
     options: [
-      "DragonGlass",
-      "Thunderbolt",
-      "MagSafe",
+      "DragonGlass", 
+      "Thunderbolt", 
+      "MagSafe", 
       "FireWire"
     ],
     correctAnswer: 3
@@ -198,9 +150,9 @@ export const TRIAL_QUESTIONS = [
     flavor: "The beast tests your knowledge of the local university tribes!",
     question: "What is the actual primary purpose of an IEEE Student Branch on campus?",
     options: [
-      "To secretly mine cryptocurrency on the lab computers.",
-      "To bridge the gap between theoretical classes and real industry tech skills.",
-      "To provide a highly official excuse to miss classes.",
+      "To secretly mine cryptocurrency on the lab computers.", 
+      "To bridge the gap between theoretical classes and real industry tech skills.", 
+      "To provide a highly official excuse to miss classes.", 
       "To host MOBA rank-pushing LAN parties disguised as 'networking events'."
     ],
     correctAnswer: 1
@@ -210,9 +162,9 @@ export const TRIAL_QUESTIONS = [
     flavor: "A glowing, ancient emblem appears in the raging dust storm!",
     question: "Look closely at the official IEEE logo. What two historical scientific symbols are combined in its design?",
     options: [
-      "A right-hand magnetic field rule and Benjamin Franklin's kite",
-      "A compass and a protractor",
-      "A microchip and a global map",
+      "A right-hand magnetic field rule and Benjamin Franklin's kite", 
+      "A compass and a protractor", 
+      "A microchip and a global map", 
       "A slice of pizza and an energy drink"
     ],
     correctAnswer: 0
@@ -222,22 +174,22 @@ export const TRIAL_QUESTIONS = [
     flavor: "The worm attempts to permanently disconnect you from the global mainframe!",
     question: "Before Wi-Fi ruled the world, there was the wire. What networking standard is defined by IEEE 802.3?",
     options: [
-      "Bluetooth",
-      "Fiber Optics",
-      "Ethernet (LAN cables)",
+      "Bluetooth", 
+      "Fiber Optics", 
+      "Ethernet (LAN cables)", 
       "Dial-up Internet (the screeching sound)"
     ],
     correctAnswer: 2
   },
   {
     id: 9,
-    flavor: "The Boss questions your technical allegiance and macro-level understanding!",
-    question: "Despite having 'Electrical' in the name, IEEE represents many modern fields. Which of these is currently a massive part of IEEE?",
+    flavor: "The Boss demands you search the ancient archives for forbidden knowledge!",
+    question: "What is the name of IEEE's massive digital library that holds over 5 million technical documents?",
     options: [
-      "Culinary Arts and Hospitality",
-      "Astrological Charting",
-      "Computer Science and Artificial Intelligence",
-      "Advanced Procrastination Theory"
+      "The Jikan Anime Tracker API", 
+      "Stack Overflow", 
+      "IEEE Xplore", 
+      "The Spectral Detective Database"
     ],
     correctAnswer: 2
   },
@@ -246,21 +198,69 @@ export const TRIAL_QUESTIONS = [
     flavor: "Shai-Hulud unleashes its final, ultimate query about the size of the empire!",
     question: "Just how massive is the global IEEE community that you are being oriented for today?",
     options: [
-      "Just a few professors in a basement somewhere.",
-      "Exactly 100 people who guard the ocean's internet cables.",
-      "Everyone who has ever successfully fixed a broken TV remote.",
+      "Just a few professors in a basement somewhere.", 
+      "Exactly 100 people who guard the ocean's internet cables.", 
+      "Everyone who has ever successfully fixed a broken TV remote.", 
       "Over 400,000 members across more than 160 countries."
     ],
     correctAnswer: 3
+  },
+  {
+    id: 11,
+    flavor: "The beast expands its domain, trapping you in a barrier of code!",
+    question: "Just like a Domain Expansion in Jujutsu Kaisen, IEEE hosts a massive 24-hour global programming competition to trap coders. What is it called?",
+    options: [
+      "IEEE Infinite Void", 
+      "IEEE Xtreme", 
+      "The Big Code Protocol", 
+      "Hackathon: Unlimited"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 12,
+    flavor: "A rhythmic vibration echoes from the sand, syncing with your devices!",
+    question: "Which IEEE standard governs the Bluetooth technology connecting your wireless earbuds?",
+    options: [
+      "IEEE 802.15.1", 
+      "IEEE 1080p", 
+      "IEEE 404.2", 
+      "IEEE 777"
+    ],
+    correctAnswer: 0
+  },
+  {
+    id: 13,
+    flavor: "The Maker demands a tribute of ancient scrolls!",
+    question: "What is the name of the flagship magazine published by IEEE to keep members updated on the latest tech?",
+    options: [
+      "The Daily Engineer", 
+      "IEEE Spectrum", 
+      "Wired: Arrakis Edition", 
+      "The Silicon Chronicle"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 14,
+    flavor: "The Sandworm bows, acknowledging your final stand!",
+    question: "As an incoming junior, what is the best way to survive the engineering desert with IEEE?",
+    options: [
+      "Memorize every single textbook in the library.", 
+      "Never sleep, only code.", 
+      "Join the Student Branch, build a strong network, and learn by doing.", 
+      "Write a C program to hack the university grading system."
+    ],
+    correctAnswer: 2
   }
 ];
 
 export const ROLE_DEFINITIONS = {
   HARKONNEN: {
     name: "House Harkonnen",
-    title: "The Betrayer",
-    description: "You stepped on others to climb the ranks. You stole credit and spread lies. But the desert does not respect false kings.",
-    lore: "A massive Sandworm senses your overwhelming Arrogance. It bursts from the sands and swallows you whole before the trial even begins.",
+    title: "The Ruthless Conqueror",
+    description: "You stepped on others to climb the ranks. Raw violent force is yours, but fear breeds treachery.",
+    lore: "High raw attack fueled by arrogance, but subject to internal sabotage and betrayal on failure.",
   },
   FREMEN: {
     name: "The Fremen Tribe",

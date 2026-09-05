@@ -46,7 +46,7 @@ export default function SummaryScreen({ bossDamageDealt, selectedRole, comrades 
             <div className="text-xs text-stone-400 uppercase font-mono tracking-wider mb-1">
               Final Archetype
             </div>
-            <div className={`text-xl font-bold font-cinzel ${selectedRole === 'FREMEN' ? 'text-sky-400' : 'text-purple-400'}`}>
+            <div className={`text-xl font-bold font-cinzel ${selectedRole === 'FREMEN' ? 'text-sky-400' : selectedRole === 'HARKONNEN' ? 'text-rose-500' : 'text-purple-400'}`}>
               {selectedRole}
             </div>
             {comrades.length > 0 && (
@@ -90,8 +90,9 @@ export default function SummaryScreen({ bossDamageDealt, selectedRole, comrades 
 
       <div className="pt-2">
         <button
+          type="button"
           onClick={onReset}
-          className="inline-flex items-center gap-2 px-8 py-4 bg-stone-800 hover:bg-stone-700 hover:border-amber-500/40 border border-stone-700 text-white font-cinzel font-bold text-sm tracking-wider uppercase rounded-xl transition-all shadow-lg active:scale-95"
+          className="inline-flex items-center gap-2 px-8 py-4 bg-stone-800 hover:bg-stone-700 hover:border-amber-500/40 border border-stone-700 text-white font-cinzel font-bold text-sm tracking-wider uppercase rounded-xl transition-all shadow-lg active:scale-95 select-none touch-manipulation"
         >
           <RotateCcw className="w-4 h-4" />
           <span>Reset Simulation</span>

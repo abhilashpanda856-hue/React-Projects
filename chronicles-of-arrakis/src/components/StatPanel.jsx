@@ -2,9 +2,9 @@ import React from 'react';
 import { Sword, Shield, Zap, Users, Brain, AlertTriangle } from 'lucide-react';
 import StatBar from './StatBar';
 
-export default function StatPanel({ stats }) {
+function StatPanel({ stats }) {
   return (
-    <div className="w-full grid grid-cols-3 sm:grid-cols-6 gap-2 p-2 bg-stone-950/60 border border-stone-800/80 rounded-lg backdrop-blur-md">
+    <div className="w-full grid grid-cols-3 sm:grid-cols-6 gap-2 p-2 bg-stone-950/60 border border-stone-800/80 rounded-lg backdrop-blur-md select-none">
       <StatBar
         label="ATK"
         value={stats.atk}
@@ -44,3 +44,5 @@ export default function StatPanel({ stats }) {
     </div>
   );
 }
+
+export default React.memo(StatPanel);

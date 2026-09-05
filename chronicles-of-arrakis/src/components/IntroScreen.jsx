@@ -60,8 +60,9 @@ export default function IntroScreen({ onStart }) {
       {/* Call to action */}
       <div className="pt-4">
         <button
+          type="button"
           onClick={onStart}
-          className="group relative inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 text-stone-950 font-cinzel font-bold text-lg rounded tracking-[0.2em] uppercase transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] border-b-4 border-amber-800 active:border-b-0 active:translate-y-1"
+          className="group relative inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 text-stone-950 font-cinzel font-bold text-lg rounded tracking-[0.2em] uppercase transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] border-b-4 border-amber-800 active:border-b-0 active:translate-y-1 select-none touch-manipulation"
         >
           <span>Enter The Sands</span>
           <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

@@ -7,6 +7,14 @@
 @layer base {
   body {
     @apply bg-[#0c0a09] text-slate-100 min-h-screen overflow-x-hidden font-sans antialiased selection:bg-amber-500 selection:text-black;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  button {
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
   }
 }
 

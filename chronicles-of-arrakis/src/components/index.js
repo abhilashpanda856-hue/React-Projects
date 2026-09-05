@@ -10,3 +10,4 @@ export { default as TrialScreen } from './TrialScreen';
 export { default as GameOverScreen } from './GameOverScreen';
 export { default as SummaryScreen } from './SummaryScreen';
 export { default as CountdownTimer } from './CountdownTimer';
+export { default as Footer } from './Footer';
